@@ -19,6 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/tailors", label: "Tailors", badge: pendingTailors || undefined },
     { href: "/admin/content", label: "Site Content" },
+    { href: "/admin/settings", label: "Settings" },
   ];
 
   return (

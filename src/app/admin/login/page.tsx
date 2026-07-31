@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
+import PasswordInput from "@/components/PasswordInput";
 import { INPUT_CLASS, PRIMARY_BUTTON_CLASS } from "@/lib/formStyles";
 
 export default function AdminLoginPage() {
@@ -49,13 +50,12 @@ export default function AdminLoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           className={INPUT_CLASS}
         />
-        <input
-          type="password"
+        <PasswordInput
           required
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className={INPUT_CLASS}
+          onChange={setPassword}
+          autoComplete="current-password"
         />
         {error && <p className="text-sm text-error">{error}</p>}
         <button type="submit" disabled={loading} className={PRIMARY_BUTTON_CLASS}>

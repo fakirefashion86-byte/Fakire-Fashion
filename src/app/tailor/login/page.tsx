@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthLayout from "@/components/AuthLayout";
+import PasswordInput from "@/components/PasswordInput";
 import { INPUT_CLASS, PRIMARY_BUTTON_CLASS } from "@/lib/formStyles";
 
 export default function TailorLoginPage() {
@@ -50,13 +51,12 @@ export default function TailorLoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           className={INPUT_CLASS}
         />
-        <input
-          type="password"
+        <PasswordInput
           required
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className={INPUT_CLASS}
+          onChange={setPassword}
+          autoComplete="current-password"
         />
         {error && <p className="text-sm text-error">{error}</p>}
         <button type="submit" disabled={loading} className={PRIMARY_BUTTON_CLASS}>
@@ -65,7 +65,7 @@ export default function TailorLoginPage() {
       </form>
       <p className="mt-6 text-center text-sm text-ink-secondary">
         New tailor?{" "}
-        <Link href="/tailor/signup" className="font-medium text-accent hover:underline">
+        <Link href="/register?role=tailor" className="font-medium text-accent hover:underline">
           Request access
         </Link>
       </p>

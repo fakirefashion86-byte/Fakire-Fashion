@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AuthLayout from "@/components/AuthLayout";
+import PasswordInput from "@/components/PasswordInput";
 import { INPUT_CLASS, PRIMARY_BUTTON_CLASS } from "@/lib/formStyles";
 
 function LoginForm() {
@@ -44,14 +45,18 @@ function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           className={INPUT_CLASS}
         />
-        <input
-          type="password"
+        <PasswordInput
           required
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className={INPUT_CLASS}
+          onChange={setPassword}
+          autoComplete="current-password"
         />
+        <div className="-mt-2 text-right">
+          <Link href="/forgot-password" className="text-xs text-accent hover:underline">
+            Forgot password?
+          </Link>
+        </div>
         {error && <p className="text-sm text-error">{error}</p>}
         <button type="submit" disabled={loading} className={PRIMARY_BUTTON_CLASS}>
           {loading ? "Logging in…" : "Log in"}

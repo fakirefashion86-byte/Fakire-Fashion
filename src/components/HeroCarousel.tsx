@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { motion } from "framer-motion";
@@ -143,13 +144,14 @@ export default function HeroCarousel({
                   animate={{ opacity: isActive ? 1 : 0.85, scale: isActive ? 1 : 1.05 }}
                   transition={{ duration: 0.7, ease: "easeOut" }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={slide.imageUrl}
                     alt={slide.imageAlt}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    fetchPriority={index === 0 ? "high" : "low"}
-                    className="h-full w-full object-cover object-[45%_20%] sm:object-[80%_20%]"
+                    fill
+                    priority={index === 0}
+                    quality={70}
+                    sizes="(max-width: 640px) 72vw, 70vw"
+                    className="object-cover object-[45%_20%] sm:object-[80%_20%]"
                   />
                   {slide.tintClassName && <div className={`absolute inset-0 ${slide.tintClassName}`} />}
                 </motion.div>

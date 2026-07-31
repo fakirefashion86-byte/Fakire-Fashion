@@ -3,7 +3,6 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import AnnouncementBar from "./AnnouncementBar";
 import MobileMenu from "./MobileMenu";
-import CartBadge from "./CartBadge";
 import LogoutButton from "./LogoutButton";
 import { SearchIcon, UserIcon, HeartIcon } from "./icons";
 
@@ -69,7 +68,13 @@ export default async function Header() {
           <button aria-label="Wishlist" className="hidden text-header-text hover:text-gold sm:block">
             <HeartIcon className="h-5 w-5" />
           </button>
-          <CartBadge isLoggedIn={Boolean(user)} />
+          <Link
+            href={user ? "/account" : "/login"}
+            aria-label="Account"
+            className="text-header-text hover:text-gold md:hidden"
+          >
+            <UserIcon className="h-5 w-5" />
+          </Link>
         </div>
       </div>
     </header>

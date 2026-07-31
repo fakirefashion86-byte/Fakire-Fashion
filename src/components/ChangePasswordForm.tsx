@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { INPUT_CLASS, PRIMARY_BUTTON_CLASS } from "@/lib/formStyles";
+import PasswordInput from "./PasswordInput";
+import { PRIMARY_BUTTON_CLASS } from "@/lib/formStyles";
 
 export default function ChangePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -43,30 +44,27 @@ export default function ChangePasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex max-w-sm flex-col gap-3">
-      <input
-        type="password"
+      <PasswordInput
         required
         placeholder="Current password"
         value={currentPassword}
-        onChange={(e) => setCurrentPassword(e.target.value)}
-        className={INPUT_CLASS}
+        onChange={setCurrentPassword}
+        autoComplete="current-password"
       />
-      <input
-        type="password"
+      <PasswordInput
         required
         minLength={6}
         placeholder="New password (min 6 characters)"
         value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        className={INPUT_CLASS}
+        onChange={setNewPassword}
+        autoComplete="new-password"
       />
-      <input
-        type="password"
+      <PasswordInput
         required
         placeholder="Confirm new password"
         value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        className={INPUT_CLASS}
+        onChange={setConfirmPassword}
+        autoComplete="new-password"
       />
       {error && <p className="text-sm text-error">{error}</p>}
       {success && <p className="text-sm text-success">Password updated.</p>}
