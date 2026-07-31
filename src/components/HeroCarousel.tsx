@@ -15,6 +15,8 @@ type Slide = {
   imageUrl: string;
   imageAlt: string;
   tintClassName: string;
+  startingPriceLabel?: string;
+  startingPrice?: string;
   primaryHref: string;
   primaryLabel: string;
   secondaryHref: string;
@@ -24,6 +26,7 @@ type Slide = {
 function buildSlides(heroImageUrl: string, heroHeading: string, heroAccent: string, heroSubheading: string): Slide[] {
   const fallbackImage = "/images/Sherwani_Hero.png";
   const image = heroImageUrl || fallbackImage;
+  const weddingImage = "/images/Wedding-Collection-Hero.png";
 
   return [
     {
@@ -44,9 +47,11 @@ function buildSlides(heroImageUrl: string, heroHeading: string, heroAccent: stri
       heading: "Wedding",
       accent: "Collection",
       subheading: "Heirloom craftsmanship for your most celebrated day.",
-      imageUrl: image,
+      imageUrl: weddingImage,
       imageAlt: "Model dressed in wedding ethnic wear",
       tintClassName: "bg-[#7a3d3a]/[0.10]",
+      startingPriceLabel: "Coat Pant",
+      startingPrice: "₹2,800",
       primaryHref: "/category/women",
       primaryLabel: "Shop Now",
       secondaryHref: "/stitching/new",
@@ -164,6 +169,18 @@ export default function HeroCarousel({
                     <p className="mt-4 text-xs leading-relaxed text-header-text-muted sm:text-sm">
                       {slide.subheading}
                     </p>
+                    {slide.startingPrice && (
+                      <div className="mt-5">
+                        <span className="block h-px w-8 bg-white/25" />
+                        <p className="mt-4 text-sm font-medium text-header-text sm:text-base">
+                          {slide.startingPriceLabel}
+                        </p>
+                        <p className="text-xs text-header-text-muted sm:text-sm">Starting at</p>
+                        <p className="mt-1 font-serif text-3xl font-bold text-gold sm:text-4xl">
+                          {slide.startingPrice}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="max-w-[62%] sm:max-w-[50%]">
