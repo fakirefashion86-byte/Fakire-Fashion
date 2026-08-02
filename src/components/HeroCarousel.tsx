@@ -6,7 +6,7 @@ import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { motion } from "framer-motion";
-import { ArrowRightIcon, CalendarIcon } from "./icons";
+import { ScissorsIcon } from "./icons";
 
 type Slide = {
   id: string;
@@ -18,10 +18,8 @@ type Slide = {
   tintClassName: string;
   startingPriceLabel?: string;
   startingPrice?: string;
-  primaryHref: string;
-  primaryLabel: string;
-  secondaryHref: string;
-  secondaryLabel: string;
+  ctaHref: string;
+  ctaLabel: string;
 };
 
 function buildSlides(heroImageUrl: string, heroHeading: string, heroAccent: string, heroSubheading: string): Slide[] {
@@ -38,10 +36,8 @@ function buildSlides(heroImageUrl: string, heroHeading: string, heroAccent: stri
       imageUrl: image,
       imageAlt: "Model wearing a hand-embroidered sherwani",
       tintClassName: "",
-      primaryHref: "/category/men",
-      primaryLabel: "Shop Now",
-      secondaryHref: "/stitching/new",
-      secondaryLabel: "Book an Appointment",
+      ctaHref: "/stitching/new",
+      ctaLabel: "Book Tailor",
     },
     {
       id: "wedding",
@@ -53,10 +49,8 @@ function buildSlides(heroImageUrl: string, heroHeading: string, heroAccent: stri
       tintClassName: "bg-[#7a3d3a]/[0.10]",
       startingPriceLabel: "Coat Pant",
       startingPrice: "₹2,800",
-      primaryHref: "/category/women",
-      primaryLabel: "Shop Now",
-      secondaryHref: "/stitching/new",
-      secondaryLabel: "Book an Appointment",
+      ctaHref: "/stitching/new",
+      ctaLabel: "Book Tailor",
     },
     {
       id: "kurta",
@@ -66,10 +60,8 @@ function buildSlides(heroImageUrl: string, heroHeading: string, heroAccent: stri
       imageUrl: image,
       imageAlt: "Model wearing a tailored kurta set",
       tintClassName: "bg-[#5c6b4a]/[0.10]",
-      primaryHref: "/category/men",
-      primaryLabel: "Shop Now",
-      secondaryHref: "/stitching/new",
-      secondaryLabel: "Book an Appointment",
+      ctaHref: "/stitching/new",
+      ctaLabel: "Book Tailor",
     },
     {
       id: "indo-western",
@@ -79,10 +71,8 @@ function buildSlides(heroImageUrl: string, heroHeading: string, heroAccent: stri
       imageUrl: image,
       imageAlt: "Model wearing an indo-western fusion outfit",
       tintClassName: "bg-black/[0.12]",
-      primaryHref: "/category/women",
-      primaryLabel: "Shop Now",
-      secondaryHref: "/stitching/new",
-      secondaryLabel: "Book an Appointment",
+      ctaHref: "/stitching/new",
+      ctaLabel: "Book Tailor",
     },
   ];
 }
@@ -188,18 +178,11 @@ export default function HeroCarousel({
                   <div className="max-w-[62%] sm:max-w-[50%]">
                     <div className="flex flex-col gap-3">
                       <Link
-                        href={slide.primaryHref}
-                        className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-center text-xs font-semibold tracking-wide text-header-bg transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold/90 sm:text-sm"
+                        href={slide.ctaHref}
+                        className="inline-flex items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-center text-xs font-semibold uppercase tracking-wide text-header-bg transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold/90 sm:text-sm"
                       >
-                        {slide.primaryLabel}
-                        <ArrowRightIcon className="h-4 w-4" />
-                      </Link>
-                      <Link
-                        href={slide.secondaryHref}
-                        className="inline-flex items-center justify-center gap-2 rounded-full border border-gold/70 px-5 py-3 text-center text-xs font-semibold tracking-wide text-gold transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/5 sm:text-sm"
-                      >
-                        {slide.secondaryLabel}
-                        <CalendarIcon className="h-4 w-4" />
+                        <ScissorsIcon className="h-4 w-4" />
+                        {slide.ctaLabel}
                       </Link>
                     </div>
 

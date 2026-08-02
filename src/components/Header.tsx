@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import AnnouncementBar from "./AnnouncementBar";
@@ -17,15 +18,11 @@ export default async function Header() {
     <header className="sticky top-0 z-40 bg-header-bg">
       <AnnouncementBar />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-        <MobileMenu isLoggedIn={Boolean(user)} userName={user?.name ?? null} isStaff={isStaff} />
-
-        <Link href="/" className="mx-auto md:mx-0">
-          <p className="text-center font-serif text-2xl font-semibold tracking-wide text-header-text">
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/images/Logo.png" alt="Fakire Fashion" width={32} height={32} className="h-8 w-8 rounded-full object-cover" />
+          <span className="font-serif text-lg font-semibold tracking-wide text-header-text sm:text-xl">
             Fakire Fashion
-          </p>
-          <p className="mt-0.5 text-center text-[10px] tracking-[0.3em] text-gold">
-            ETHNIC WEAR
-          </p>
+          </span>
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-8 text-sm font-medium text-header-text md:flex">
@@ -68,13 +65,23 @@ export default async function Header() {
           <button aria-label="Wishlist" className="hidden text-header-text hover:text-gold sm:block">
             <HeartIcon className="h-5 w-5" />
           </button>
-          <Link
-            href={user ? "/account" : "/login"}
-            aria-label="Account"
-            className="text-header-text hover:text-gold md:hidden"
-          >
-            <UserIcon className="h-5 w-5" />
-          </Link>
+          {user ? (
+            <Link
+              href="/account"
+              aria-label="Account"
+              className="text-header-text hover:text-gold md:hidden"
+            >
+              <UserIcon className="h-5 w-5" />
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="text-xs font-semibold tracking-wide text-header-text hover:text-gold md:hidden"
+            >
+              LOGIN
+            </Link>
+          )}
+          <MobileMenu isLoggedIn={Boolean(user)} userName={user?.name ?? null} isStaff={isStaff} />
         </div>
       </div>
     </header>

@@ -113,7 +113,7 @@ export default async function HomePage() {
       {/* Latest arrivals */}
       <section className="mx-auto max-w-6xl px-4 py-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-2xl text-foreground">Latest Arrivals</h2>
+          <h2 className="font-serif text-2xl text-foreground">Design Catalog</h2>
           <Link href="/products" className="flex items-center gap-1 text-sm font-medium text-accent hover:text-accent-hover hover:underline">
             View All <span aria-hidden>→</span>
           </Link>
