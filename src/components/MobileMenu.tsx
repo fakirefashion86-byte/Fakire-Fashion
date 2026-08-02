@@ -5,14 +5,28 @@ import Link from "next/link";
 import { MenuIcon, CloseIcon } from "./icons";
 import LogoutButton from "./LogoutButton";
 
+const ADMIN_LINKS = [
+  { href: "/admin", label: "Dashboard" },
+  { href: "/admin/products", label: "Products" },
+  { href: "/admin/categories", label: "Categories" },
+  { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/stitch-orders", label: "Stitch Orders" },
+  { href: "/admin/customers", label: "Customers" },
+  { href: "/admin/tailors", label: "Tailors" },
+  { href: "/admin/content", label: "Site Content" },
+  { href: "/admin/settings", label: "Settings" },
+];
+
 export default function MobileMenu({
   isLoggedIn,
   userName,
   isStaff,
+  isAdmin,
 }: {
   isLoggedIn: boolean;
   userName: string | null;
   isStaff: boolean;
+  isAdmin: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
@@ -82,6 +96,25 @@ export default function MobileMenu({
                       <Link href="/stitching/my-orders" onClick={() => setOpen(false)}>
                         My Stitching Orders
                       </Link>
+                    </>
+                  )}
+                  {isAdmin && (
+                    <>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">Admin</p>
+                      {ADMIN_LINKS.map((link) => (
+                        <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="pl-2">
+                          {link.label}
+                        </Link>
+                      ))}
+                      <div className="my-1 border-t border-border" />
+                    </>
+                  )}
+                  {isStaff && !isAdmin && (
+                    <>
+                      <Link href="/tailor" onClick={() => setOpen(false)}>
+                        Tailor Dashboard
+                      </Link>
+                      <div className="my-1 border-t border-border" />
                     </>
                   )}
                   <Link href="/account" onClick={() => setOpen(false)}>

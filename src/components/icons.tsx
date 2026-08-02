@@ -177,3 +177,78 @@ export function CalendarIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function StarIcon({ className, filled }: IconProps & { filled?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className={className}
+    >
+      <path d="M12 3l2.7 5.9 6.3.6-4.8 4.3 1.4 6.2L12 16.9 6.4 20l1.4-6.2-4.8-4.3 6.3-.6L12 3z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function RulerIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+      <path d="M3 16l5-5 13 13-5 5L3 16z" strokeLinejoin="round" strokeLinecap="round" />
+      <path d="M8.5 11.5l2 2M11 9l2 2M13.5 6.5l2 2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function GemIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+      <path d="M4 9l4-6h8l4 6-10 12L4 9z" strokeLinejoin="round" strokeLinecap="round" />
+      <path d="M4 9h16M9.5 3l-2 6 4.5 12 4.5-12-2-6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function SewingMachineIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+      <path d="M3 19h13v-3H8l-2-3h11c2.5 0 4 1.5 4 3.5" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx="17" cy="7" r="2.5" />
+      <path d="M17 9.5V13" strokeLinecap="round" />
+      <path d="M6 19v2M12 19v2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function WrenchIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+      <path
+        d="M14.7 6.3a4 4 0 00-5.4 5l-6.3 6.3 2 2 6.3-6.3a4 4 0 005-5.4l-2.6 2.6-2-2 2.6-2.6z"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function ChatIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className={className}>
+      <path
+        d="M21 11.5a8.5 8.5 0 01-12.4 7.5L3 20l1.1-5.5A8.5 8.5 0 1121 11.5z"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={className}>
+      <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

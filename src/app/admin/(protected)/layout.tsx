@@ -23,13 +23,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ];
 
   return (
-    <div className="mx-auto flex max-w-6xl gap-8 px-4 py-10">
-      <nav className="w-48 flex-shrink-0 text-sm">
-        <p className="mb-4 font-serif text-lg text-foreground">Control Centre</p>
-        <ul className="flex flex-col gap-2">
+    <div className="mx-auto max-w-6xl gap-8 px-4 py-6 sm:flex sm:py-10">
+      <nav className="mb-6 sm:mb-0 sm:w-48 sm:flex-shrink-0 sm:text-sm">
+        <p className="mb-3 font-serif text-lg text-foreground sm:mb-4">Control Centre</p>
+        <ul className="flex gap-2 overflow-x-auto pb-2 sm:flex-col sm:overflow-visible sm:pb-0">
           {links.map((link) => (
-            <li key={link.href} className="flex items-center justify-between">
-              <Link href={link.href} className="text-foreground/80 hover:text-accent-hover">
+            <li key={link.href} className="flex flex-shrink-0 items-center gap-1.5 sm:flex-shrink sm:justify-between">
+              <Link
+                href={link.href}
+                className="whitespace-nowrap rounded-full border border-border px-3 py-1.5 text-foreground/80 hover:text-accent-hover sm:rounded-none sm:border-0 sm:px-0 sm:py-0"
+              >
                 {link.label}
               </Link>
               {link.badge ? (
@@ -39,12 +42,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               ) : null}
             </li>
           ))}
-          <li className="pt-2">
-            <LogoutButton />
-          </li>
         </ul>
+        <div className="mt-3 sm:mt-4 sm:pt-2">
+          <LogoutButton />
+        </div>
       </nav>
-      <div className="flex-1">{children}</div>
+      <div className="min-w-0 flex-1 overflow-x-auto">{children}</div>
     </div>
   );
 }

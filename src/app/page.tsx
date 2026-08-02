@@ -4,23 +4,12 @@ import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
 import { getSession } from "@/lib/auth";
 import {
-  KurtaIcon,
-  JacketIcon,
-  KidIcon,
-  AccessoryIcon,
   AwardIcon,
   ScissorsIcon,
   ShieldIcon,
   TruckIcon,
 } from "@/components/icons";
 import { DEFAULT_HOMEPAGE_CONTENT, HOMEPAGE_CONTENT_KEY, HomepageContent } from "@/lib/siteContent";
-
-const CATEGORY_ICONS: Record<string, typeof KurtaIcon> = {
-  women: KurtaIcon,
-  men: JacketIcon,
-  kids: KidIcon,
-  accessories: AccessoryIcon,
-};
 
 const FEATURES = [
   {
@@ -46,16 +35,12 @@ const FEATURES = [
 ];
 
 export default async function HomePage() {
-  const [session, categories, products, contentRow] = await Promise.all([
+  const [session, products, contentRow] = await Promise.all([
     getSession(),
-    prisma.category.findMany({
-      where: { status: true, slug: { in: ["women", "men"] } },
-      orderBy: { name: "desc" }, // "Women" before "Men"
-    }),
     prisma.product.findMany({
       where: { status: true },
       orderBy: { createdAt: "desc" },
-      take: 8,
+      take: 12,
       include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
     }),
     prisma.siteContent.findUnique({ where: { key: HOMEPAGE_CONTENT_KEY } }),
@@ -86,34 +71,13 @@ export default async function HomePage() {
         heroSubheading={content.heroSubheading}
       />
 
-      {/* Shop by category */}
-      <section className="mx-auto max-w-6xl px-4 py-14">
-        <h2 className="text-center font-serif text-2xl text-foreground">
-          <span className="mx-4 inline-block border-t border-accent/40 align-middle w-10" />
-          Shop By Category
-          <span className="mx-4 inline-block border-t border-accent/40 align-middle w-10" />
-        </h2>
-        <div className="mx-auto mt-8 grid max-w-sm grid-cols-2 gap-4">
-          {categories.map((c) => {
-            const Icon = CATEGORY_ICONS[c.slug] ?? KurtaIcon;
-            return (
-              <Link
-                key={c.id}
-                href={`/category/${c.slug}`}
-                className="flex flex-col items-center gap-3 rounded-lg border border-border px-4 py-8 text-center hover:border-accent hover:bg-section"
-              >
-                <Icon className="h-9 w-9 text-icon" />
-                <span className="text-sm font-medium text-foreground">{c.name}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Latest arrivals */}
-      <section className="mx-auto max-w-6xl px-4 py-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-2xl text-foreground">Design Catalog</h2>
+      {/* Design Catalog */}
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="font-serif text-2xl text-foreground sm:text-3xl">Design Catalog</h2>
+            <p className="mt-1 text-sm text-ink-muted">Explore our curated collection of handcrafted designs</p>
+          </div>
           <Link href="/products" className="flex items-center gap-1 text-sm font-medium text-accent hover:text-accent-hover hover:underline">
             View All <span aria-hidden>→</span>
           </Link>
@@ -121,7 +85,7 @@ export default async function HomePage() {
         {products.length === 0 ? (
           <p className="text-ink-muted">No products yet — check back soon.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {products.map((p) => (
               <ProductCard
                 key={p.id}
@@ -139,7 +103,7 @@ export default async function HomePage() {
       </section>
 
       {/* Feature strip */}
-      <section className="mt-8 border-y border-border bg-section">
+      <section className="border-y border-border bg-section">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:grid-cols-4">
           {FEATURES.map((f) => (
             <div key={f.title} className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-left">
