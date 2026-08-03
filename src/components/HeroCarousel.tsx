@@ -42,11 +42,11 @@ function buildSlides(
       subheading:
         heroSubheading ||
         "Timeless designs. Crafted to perfection. Made for every occasion.",
-      imageUrl: image,
-      imageAlt: "Model wearing a hand-embroidered sherwani",
+      imageUrl: "/images/Pathani-Suit.png",
+      imageAlt: "Model wearing a tailored Pathani suit",
       tintClassName: "",
-      startingPriceLabel: "Sherwani",
-      startingPrice: "₹3,500",
+      startingPriceLabel: "Pathani Suit",
+      startingPrice: "₹800",
       ctaHref: "/stitching/new",
       ctaLabel: "Book Tailor",
     },
@@ -68,7 +68,7 @@ function buildSlides(
       heading: "Kurta",
       accent: "Collection",
       subheading: "Everyday elegance, tailored to quiet perfection.",
-      imageUrl: image,
+      imageUrl: "/images/Kurtaset-Hero.png",
       imageAlt: "Model wearing a tailored kurta set",
       tintClassName: "bg-[#5c6b4a]/[0.10]",
       startingPriceLabel: "Kurta Set",
@@ -265,8 +265,8 @@ export default function HeroCarousel({
                       animate="visible"
                       exit="hidden"
                     >
-                      {/* Bottom bar: name/price + CTA + dots */}
-                      <div className="flex w-full items-end justify-between gap-4">
+                      {/* Bottom bar: name/price + CTA */}
+                      <div className="flex w-full flex-col items-start gap-3">
                         {slide.startingPrice && (
                           <motion.div variants={priceVariants}>
                             <p className="mb-0.5 font-sans text-[10px] font-semibold uppercase tracking-[2.5px] text-gold/90 sm:text-[11px]">

@@ -72,12 +72,9 @@ export default async function HomePage() {
       />
 
       {/* Design Catalog */}
-      <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h2 className="font-serif text-2xl text-foreground sm:text-3xl">Design Catalog</h2>
-            <p className="mt-1 text-sm text-ink-muted">Explore our curated collection of handcrafted designs</p>
-          </div>
+      <section className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-serif text-2xl text-foreground sm:text-3xl">Design Catalog</h2>
           <Link href="/products" className="flex items-center gap-1 text-sm font-medium text-accent hover:text-accent-hover hover:underline">
             View All <span aria-hidden>→</span>
           </Link>

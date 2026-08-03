@@ -120,7 +120,7 @@ export default function BookTailorWizard({
       </div>
 
       {/* Form Steps */}
-      <div className="relative min-h-[400px]">
+      <div className="relative">
         <AnimatePresence mode="wait">
           
           {step === 1 && (
@@ -131,7 +131,7 @@ export default function BookTailorWizard({
               animate="animate"
               exit="exit"
               transition={easeTransition}
-              className="absolute inset-0"
+              className="w-full"
             >
               <div className="mb-6">
                 <h2 className="text-2xl font-serif text-white mb-2">Select Garment Type</h2>
@@ -175,7 +175,7 @@ export default function BookTailorWizard({
               animate="animate"
               exit="exit"
               transition={easeTransition}
-              className="absolute inset-0"
+              className="w-full"
             >
               <div className="mb-6">
                 <h2 className="text-2xl font-serif text-white mb-2">Schedule Home Visit</h2>
@@ -237,7 +237,7 @@ export default function BookTailorWizard({
               animate="animate"
               exit="exit"
               transition={easeTransition}
-              className="absolute inset-0"
+              className="w-full"
             >
               <div className="mb-6">
                 <h2 className="text-2xl font-serif text-white mb-2">Your Details</h2>
@@ -321,7 +321,7 @@ export default function BookTailorWizard({
               animate="animate"
               exit="exit"
               transition={easeTransition}
-              className="absolute inset-0"
+              className="w-full"
             >
               <div className="mb-6">
                 <h2 className="text-2xl font-serif text-white mb-2">Confirm Booking</h2>

@@ -32,6 +32,15 @@ export default function MobileMenu({
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  useEffect(() => {
     if (!isLoggedIn) return;
     fetch("/api/cart")
       .then((res) => res.json())
@@ -54,7 +63,7 @@ export default function MobileMenu({
       {open && (
         <div className="fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <div className="relative mr-auto flex h-full w-72 flex-col bg-card p-5" style={{ boxShadow: "var(--shadow-soft)" }}>
+          <div className="relative mr-auto flex h-full w-72 flex-col overflow-y-auto bg-card p-5" style={{ boxShadow: "var(--shadow-soft)" }}>
             <div className="mb-6 flex items-center justify-between">
               <span className="font-serif text-lg font-semibold text-foreground">Menu</span>
               <button aria-label="Close menu" onClick={() => setOpen(false)} className="text-icon hover:text-icon-hover">

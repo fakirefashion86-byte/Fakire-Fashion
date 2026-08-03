@@ -79,13 +79,14 @@ async function main() {
       description: "Hand-embroidered chikankari kurti.",
     },
     {
-      name: "Designer Saree",
+      name: "Three Piece Suit",
       code: "SAMPLE-SR01",
       category: "Women",
       subCategory: "Sarees",
       mrp: 3499,
       price: 2799,
-      description: "Festive-wear saree with contrast blouse piece.",
+      description: "Sharp three-piece suit with a tailored fit.",
+      imageUrl: "/images/Three-Piece-Suit.png",
     },
     {
       name: "Kurta Pajama Set",
@@ -95,6 +96,7 @@ async function main() {
       mrp: 1699,
       price: 1299,
       description: "Classic cotton kurta pajama set.",
+      imageUrl: "/images/Kurta-Pajama.png",
     },
     {
       name: "Pathani Suit",
@@ -120,9 +122,11 @@ async function main() {
     const categoryId = categories[p.category].id;
     const subCategoryId = categories[p.category].subs[p.subCategory];
 
+    const imageUrl = "imageUrl" in p ? p.imageUrl : undefined;
+
     await prisma.product.upsert({
       where: { code: p.code },
-      update: {},
+      update: { name: p.name, description: p.description },
       create: {
         categoryId,
         subCategoryId,
@@ -138,6 +142,7 @@ async function main() {
             { size: "40", color: "Default", mrp: p.mrp, price: p.price, qty: 10 },
           ],
         },
+        ...(imageUrl && { images: { create: [{ url: imageUrl, sortOrder: 0 }] } }),
       },
     });
   }
