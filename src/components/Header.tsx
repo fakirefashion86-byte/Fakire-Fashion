@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import AnnouncementBar from "./AnnouncementBar";
 import MobileMenu from "./MobileMenu";
 import LogoutButton from "./LogoutButton";
 import { SearchIcon, UserIcon, HeartIcon } from "./icons";
@@ -17,7 +16,6 @@ export default async function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-black">
-      <AnnouncementBar />
       <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5">
         <Link href="/" className="flex items-center gap-3">
           <Image

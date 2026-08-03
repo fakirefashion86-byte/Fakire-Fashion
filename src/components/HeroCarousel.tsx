@@ -23,38 +23,6 @@ type Slide = {
   ctaLabel: string;
 };
 
-/* ── Decorative diamond-line divider ── */
-function SectionDivider({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 120 10"
-      className={`h-2.5 w-[120px] ${className}`}
-      aria-hidden="true"
-    >
-      <line x1="0" y1="5" x2="48" y2="5" stroke="#C8A35F" strokeWidth="1.2" />
-      <rect
-        x="52"
-        y="1"
-        width="7"
-        height="7"
-        transform="rotate(45 55.5 4.5)"
-        fill="#C8A35F"
-      />
-      <rect
-        x="60"
-        y="1"
-        width="7"
-        height="7"
-        transform="rotate(45 63.5 4.5)"
-        fill="none"
-        stroke="#C8A35F"
-        strokeWidth="0.8"
-      />
-      <line x1="72" y1="5" x2="120" y2="5" stroke="#C8A35F" strokeWidth="1.2" />
-    </svg>
-  );
-}
-
 /* ── Slide data builder ── */
 function buildSlides(
   heroImageUrl: string,
@@ -147,7 +115,7 @@ const priceVariants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.5, ease: "easeOut" as const, delay: 0.6 },
+    transition: { duration: 0.5, ease: "easeOut" as const, delay: 0.1 },
   },
 };
 
@@ -258,12 +226,12 @@ export default function HeroCarousel({
                     priority={index === 0}
                     quality={80}
                     sizes="(max-width: 640px) 65vw, 70vw"
-                    className="object-cover object-[46%_8%] sm:object-[55%_10%] lg:object-[65%_12%]"
+                    className="object-cover object-[46%_8%] brightness-[1.15] contrast-[1.03] sm:object-[55%_10%] lg:object-[65%_12%]"
                   />
                   {/* Colour tint overlay per slide */}
                   {slide.tintClassName && (
                     <div
-                      className={`absolute inset-0 opacity-40 ${slide.tintClassName}`}
+                      className={`absolute inset-0 opacity-20 ${slide.tintClassName}`}
                     />
                   )}
                 </motion.div>
@@ -273,8 +241,8 @@ export default function HeroCarousel({
                   className="pointer-events-none absolute inset-0"
                   style={{
                     backgroundImage: [
-                      "linear-gradient(90deg, rgba(10,8,6,0.95) 0%, rgba(10,8,6,0.78) 30%, rgba(10,8,6,0.35) 58%, rgba(10,8,6,0.08) 100%)",
-                      "linear-gradient(180deg, rgba(10,8,6,0.25) 0%, rgba(10,8,6,0.05) 40%, rgba(10,8,6,0.55) 100%)",
+                      "linear-gradient(90deg, rgba(10,8,6,0.55) 0%, rgba(10,8,6,0.3) 30%, rgba(10,8,6,0.08) 58%, rgba(10,8,6,0.02) 100%)",
+                      "linear-gradient(180deg, rgba(10,8,6,0.05) 0%, rgba(10,8,6,0.02) 35%, rgba(10,8,6,0.8) 100%)",
                     ].join(", "),
                   }}
                 />
@@ -282,7 +250,7 @@ export default function HeroCarousel({
                 <div
                   className="pointer-events-none absolute inset-0"
                   style={{
-                    boxShadow: "inset 0 0 120px 60px rgba(10,8,6,0.4)",
+                    boxShadow: "inset 0 0 90px 40px rgba(10,8,6,0.25)",
                   }}
                 />
 
@@ -291,101 +259,68 @@ export default function HeroCarousel({
                   {isActive && (
                     <motion.div
                       key={slide.id}
-                      className="relative z-10 flex h-full flex-col justify-between px-5 pb-5 pt-8 sm:px-10 sm:pb-12 sm:pt-16 lg:px-16"
+                      className="relative z-10 flex h-full flex-col justify-end px-5 pb-4 sm:px-10 sm:pb-6 lg:px-16"
                       variants={containerVariants}
                       initial="hidden"
                       animate="visible"
                       exit="hidden"
                     >
-                      {/* Top content block */}
-                      <div className="max-w-[52%] sm:max-w-[46%] lg:max-w-[42%]">
-                        <motion.h1
-                          variants={itemVariants}
-                          className="font-serif text-[clamp(2.2rem,7vw,3.5rem)] font-bold leading-[1.05] tracking-tight text-white"
-                        >
-                          {slide.heading}
-                        </motion.h1>
-
-                        <motion.p
-                          variants={itemVariants}
-                          className="mt-1 font-serif text-[clamp(2.2rem,7vw,3.5rem)] font-semibold italic leading-[1.05] text-gold"
-                        >
-                          {slide.accent}
-                        </motion.p>
-
-                        <motion.div variants={itemVariants} className="mt-3 sm:mt-6">
-                          <SectionDivider />
-                        </motion.div>
-
-                        <motion.p
-                          variants={itemVariants}
-                          className="mt-3 max-w-[280px] font-sans text-[13px] font-normal leading-[1.5] text-white/75 sm:mt-6 sm:text-base sm:leading-[1.75] lg:max-w-[320px]"
-                        >
-                          {slide.subheading}
-                        </motion.p>
-
-                        {/* Price block */}
+                      {/* Bottom bar: name/price + CTA + dots */}
+                      <div className="flex w-full items-end justify-between gap-4">
                         {slide.startingPrice && (
-                          <motion.div
-                            variants={priceVariants}
-                            className="mt-5 sm:mt-14"
-                          >
-                            <div className="mb-2 h-px w-10 bg-gold/40 sm:mb-4" />
-                            <p className="mb-1 font-sans text-[11px] font-semibold uppercase tracking-[2.5px] text-gold/90">
+                          <motion.div variants={priceVariants}>
+                            <p className="mb-0.5 font-sans text-[10px] font-semibold uppercase tracking-[2.5px] text-gold/90 sm:text-[11px]">
                               {slide.startingPriceLabel}
                             </p>
-                            <p className="mb-1 font-sans text-[13px] font-medium tracking-wide text-white/55">
+                            <p className="mb-0.5 font-sans text-[11px] font-medium tracking-wide text-white/55 sm:text-[12px]">
                               Starting at
                             </p>
-                            <p className="font-serif text-[clamp(2.1rem,8vw,3.8rem)] font-bold leading-none text-gold">
+                            <p className="font-serif text-[clamp(1.4rem,5vw,2.2rem)] font-bold leading-none text-gold">
                               {slide.startingPrice}
                             </p>
                           </motion.div>
                         )}
-                      </div>
 
-                      {/* Bottom: CTA + dots */}
-                      <div className="max-w-[52%] sm:max-w-[46%] lg:max-w-[42%]">
-                        <motion.div variants={itemVariants}>
+                        <motion.div variants={itemVariants} className="shrink-0">
                           <Link
                             href={slide.ctaHref}
-                            className="hero-cta-btn group inline-flex h-[46px] w-[180px] items-center justify-center gap-2.5 rounded-lg font-sans text-[14px] font-semibold tracking-wide text-[#0a0806] transition-all duration-300 sm:h-[54px] sm:w-[210px] sm:text-[15px]"
+                            className="hero-cta-btn group inline-flex h-[42px] w-[160px] items-center justify-center gap-2.5 rounded-lg font-sans text-[13px] font-semibold tracking-wide text-[#0a0806] transition-all duration-300 sm:h-[50px] sm:w-[190px] sm:text-[14px]"
                           >
-                            <ScissorsIcon className="h-[18px] w-[18px] transition-transform duration-300 group-hover:rotate-[-15deg]" />
+                            <ScissorsIcon className="h-4 w-4 transition-transform duration-300 group-hover:rotate-[-15deg]" />
                             {slide.ctaLabel}
                           </Link>
                         </motion.div>
-
-                        {/* Progress dots */}
-                        <motion.div
-                          variants={itemVariants}
-                          className="mt-4 flex items-center gap-2.5 sm:mt-6"
-                        >
-                          {slides.map((s, i) => (
-                            <button
-                              key={s.id}
-                              aria-label={`Go to slide ${i + 1}`}
-                              onClick={() => scrollTo(i)}
-                              className="group relative flex h-4 items-center"
-                            >
-                              <span
-                                className={`block rounded-full transition-all duration-500 ${
-                                  i === selectedIndex
-                                    ? "h-[6px] w-7 bg-gold shadow-[0_0_10px_rgba(198,166,100,0.5)]"
-                                    : "h-[5px] w-[5px] bg-white/20 group-hover:bg-white/40"
-                                }`}
-                              />
-                              {/* Active dot progress fill */}
-                              {i === selectedIndex && (
-                                <span
-                                  className="absolute left-0 top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-white/30"
-                                  style={{ width: `${progress}%`, maxWidth: "28px" }}
-                                />
-                              )}
-                            </button>
-                          ))}
-                        </motion.div>
                       </div>
+
+                      {/* Progress dots */}
+                      <motion.div
+                        variants={itemVariants}
+                        className="mt-3 flex items-center gap-2.5 sm:mt-4"
+                      >
+                        {slides.map((s, i) => (
+                          <button
+                            key={s.id}
+                            aria-label={`Go to slide ${i + 1}`}
+                            onClick={() => scrollTo(i)}
+                            className="group relative flex h-4 items-center"
+                          >
+                            <span
+                              className={`block rounded-full transition-all duration-500 ${
+                                i === selectedIndex
+                                  ? "h-[6px] w-7 bg-gold shadow-[0_0_10px_rgba(198,166,100,0.5)]"
+                                  : "h-[5px] w-[5px] bg-white/20 group-hover:bg-white/40"
+                              }`}
+                            />
+                            {/* Active dot progress fill */}
+                            {i === selectedIndex && (
+                              <span
+                                className="absolute left-0 top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-white/30"
+                                style={{ width: `${progress}%`, maxWidth: "28px" }}
+                              />
+                            )}
+                          </button>
+                        ))}
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>
