@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname !== "/") return null;
+
   return (
     <footer className="mt-auto bg-btn">
       <div className="mx-auto max-w-6xl px-4 py-10 text-sm text-ink-invert/70">

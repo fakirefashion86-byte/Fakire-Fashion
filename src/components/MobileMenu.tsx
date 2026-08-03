@@ -7,13 +7,13 @@ import LogoutButton from "./LogoutButton";
 
 const ADMIN_LINKS = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/products", label: "Products" },
+  // { href: "/admin/products", label: "Products" }, // disabled — next phase
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/stitch-orders", label: "Stitch Orders" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/tailors", label: "Tailors" },
-  { href: "/admin/content", label: "Site Content" },
+  // { href: "/admin/content", label: "Site Content" }, // disabled — next phase
   { href: "/admin/settings", label: "Settings" },
 ];
 

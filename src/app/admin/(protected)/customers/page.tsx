@@ -11,7 +11,29 @@ export default async function AdminCustomersPage() {
   return (
     <div>
       <h1 className="mb-6 text-2xl font-semibold">Customers</h1>
-      <table className="w-full text-sm">
+
+      {customers.length === 0 && <p className="text-ink-muted">No customers yet.</p>}
+
+      {/* Mobile: card list */}
+      <div className="flex flex-col gap-3 sm:hidden">
+        {customers.map((c) => (
+          <div key={c.id} className="rounded-lg border border-border p-4">
+            <Link href={`/admin/customers/${c.id}`} className="font-medium text-accent hover:underline">
+              {c.name}
+            </Link>
+            <p className="mt-1 truncate text-sm text-ink-muted">{c.email}</p>
+            <p className="text-sm text-ink-muted">{c.mobile || "—"}</p>
+            <div className="mt-3 flex justify-between text-sm">
+              <span>{c._count.orders} orders</span>
+              <span>{c._count.stitchOrders} stitch orders</span>
+              <span className="text-ink-muted">{c.createdAt.toDateString()}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: table */}
+      <table className="hidden w-full text-sm sm:table">
         <thead>
           <tr className="border-b border-border text-left text-ink-muted">
             <th className="py-2">Name</th>
@@ -39,7 +61,6 @@ export default async function AdminCustomersPage() {
           ))}
         </tbody>
       </table>
-      {customers.length === 0 && <p className="mt-4 text-ink-muted">No customers yet.</p>}
     </div>
   );
 }

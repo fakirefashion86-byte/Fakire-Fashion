@@ -26,6 +26,7 @@ export default async function Header() {
               height={50}
               priority
               className="h-[50px] w-[50px] object-cover"
+              style={{ filter: "brightness(1.2) saturate(1.3) contrast(0.95)" }}
             />
             <span className="font-serif text-lg font-semibold text-white sm:text-xl">Fakire Fashion</span>
           </Link>
