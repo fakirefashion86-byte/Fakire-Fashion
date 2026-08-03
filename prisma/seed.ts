@@ -148,19 +148,31 @@ async function main() {
   }
 
   // --- Stitch (custom tailoring) categories (no images — see note above) ---
-  const stitchCategoryDefs = [
-    "Kurta Pajama",
-    "Salwar Suit",
-    "Coat & Pant",
-    "Blazer",
-    "Pathani Suit",
-    "Three Piece Suit",
+  const stitchCategoryDefs: { name: string; gender: "male" | "female" }[] = [
+    { name: "Shirt Pant", gender: "male" },
+    { name: "Shirt", gender: "male" },
+    { name: "Pant", gender: "male" },
+    { name: "Kurta Pajama", gender: "male" },
+    { name: "Kurta Pant", gender: "male" },
+    { name: "Pathani Suit", gender: "male" },
+    { name: "Sadri", gender: "male" },
+    { name: "Coat Pant", gender: "male" },
+    { name: "Three Piece Suit", gender: "male" },
+    { name: "Salwar Suit", gender: "female" },
+    { name: "Kurti Pant", gender: "female" },
+    { name: "Blouse Stitching", gender: "female" },
+    { name: "Half Lining Suit", gender: "female" },
+    { name: "Full Lining Suit", gender: "female" },
+    { name: "Ladies Shirt", gender: "female" },
+    { name: "Ladies Pant", gender: "female" },
   ];
 
-  for (const name of stitchCategoryDefs) {
+  for (const { name, gender } of stitchCategoryDefs) {
     const existing = await prisma.stitchCategory.findFirst({ where: { name } });
     if (!existing) {
-      await prisma.stitchCategory.create({ data: { name } });
+      await prisma.stitchCategory.create({ data: { name, gender } });
+    } else if (existing.gender !== gender) {
+      await prisma.stitchCategory.update({ where: { id: existing.id }, data: { gender } });
     }
   }
 

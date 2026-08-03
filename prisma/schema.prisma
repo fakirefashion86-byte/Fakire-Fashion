@@ -6,14 +6,20 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 enum Role {
   customer
   admin
   tailor
+}
+
+enum Gender {
+  male
+  female
 }
 
 enum OrderStatus {
@@ -187,9 +193,11 @@ model OrderItem {
 }
 
 model StitchCategory {
-  id    Int    @id @default(autoincrement())
-  name  String
-  image String?
+  id     Int     @id @default(autoincrement())
+  name   String
+  gender Gender  @default(male)
+  status Boolean @default(true)
+  image  String?
 
   stitchOrders StitchOrder[]
 
@@ -197,17 +205,20 @@ model StitchCategory {
 }
 
 model StitchOrder {
-  id               Int          @id @default(autoincrement())
-  userId           Int
-  stitchCategoryId Int
-  measurements     Json
-  suitImage        String?
-  customerName     String
-  customerEmail    String
-  customerMobile   String
-  customerAddress  String
-  status           StitchStatus @default(not_started)
-  createdAt        DateTime     @default(now())
+  id                 Int          @id @default(autoincrement())
+  userId             Int
+  stitchCategoryId   Int
+  measurements       Json
+  suitImage          String?
+  customerName       String
+  customerEmail      String
+  customerMobile     String
+  customerAddress    String
+  preferredDate      DateTime
+  preferredTimeSlot  String
+  visitCompleted     Boolean      @default(false)
+  status             StitchStatus @default(not_started)
+  createdAt          DateTime     @default(now())
 
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   stitchCategory StitchCategory @relation(fields: [stitchCategoryId], references: [id])

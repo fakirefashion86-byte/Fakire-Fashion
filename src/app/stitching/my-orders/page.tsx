@@ -54,6 +54,9 @@ export default async function MyStitchOrdersPage() {
               <p className="mt-1 text-sm text-ink-muted">
                 Submitted {order.createdAt.toDateString()}
               </p>
+              <p className="mt-1 text-sm text-ink-muted">
+                Visit: {order.preferredDate.toDateString()} · {order.preferredTimeSlot}
+              </p>
               <p className="mt-1 text-sm text-ink-muted">Delivery to: {order.customerAddress}</p>
             </div>
           ))}

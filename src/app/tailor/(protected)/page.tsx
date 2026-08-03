@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
+import VisitToggle from "@/components/admin/VisitToggle";
 import type { StitchStatus } from "@prisma/client";
 
 const STATUS_LABELS: Record<StitchStatus, string> = {
@@ -73,8 +74,11 @@ export default async function TailorStitchOrdersPage({ searchParams }: Props) {
               <th className="py-2">Customer</th>
               <th className="py-2">Garment</th>
               <th className="py-2">Contact</th>
+              <th className="py-2">Visit Schedule</th>
               <th className="py-2">Delivery Address</th>
+              <th className="py-2">Visit Status</th>
               <th className="py-2">Status</th>
+              <th className="py-2"></th>
             </tr>
           </thead>
           <tbody>
@@ -87,9 +91,22 @@ export default async function TailorStitchOrdersPage({ searchParams }: Props) {
                   <br />
                   {o.customerMobile}
                 </td>
+                <td className="py-2 text-ink-muted">
+                  {o.preferredDate.toDateString()}
+                  <br />
+                  {o.preferredTimeSlot}
+                </td>
                 <td className="py-2 text-ink-muted">{o.customerAddress}</td>
                 <td className="py-2">
+                  <VisitToggle orderId={o.id} completed={o.visitCompleted} />
+                </td>
+                <td className="py-2">
                   <StitchStatusSelect orderId={o.id} status={o.status} />
+                </td>
+                <td className="py-2">
+                  <Link href={`/tailor/stitch-orders/${o.id}`} className="text-xs text-accent hover:underline">
+                    View / Measurements
+                  </Link>
                 </td>
               </tr>
             ))}

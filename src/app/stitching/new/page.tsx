@@ -1,19 +1,21 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import BookTailorWizard from "@/components/BookTailorWizard";
+import BookTailorForm from "@/components/BookTailorWizard";
 
 export default async function NewStitchOrderPage() {
   const session = await getSession();
   if (!session) redirect("/login?next=/stitching/new");
 
   const [categories, user] = await Promise.all([
-    prisma.stitchCategory.findMany({ orderBy: { name: "asc" } }),
+    prisma.stitchCategory.findMany({ where: { status: true }, orderBy: { name: "asc" } }),
     prisma.user.findUnique({
       where: { id: session.userId },
       select: { name: true, email: true, mobile: true, address: true },
     }),
   ]);
+
+  if (!user) redirect("/login?next=/stitching/new");
 
   return (
     <div className="relative min-h-screen bg-[#0c0a08] text-white flex flex-col items-center pt-16 pb-24 px-4 overflow-hidden">
@@ -28,13 +30,13 @@ export default async function NewStitchOrderPage() {
         </p>
       </div>
       
-      <BookTailorWizard
-        categories={categories.map((c) => ({ id: c.id, name: c.name }))}
+      <BookTailorForm
+        categories={categories.map((c) => ({ id: c.id, name: c.name, gender: c.gender }))}
         defaultValues={{
-          customerName: user?.name ?? "",
-          customerEmail: user?.email ?? "",
-          customerMobile: user?.mobile ?? "",
-          customerAddress: user?.address ?? "",
+          customerName: user.name,
+          customerEmail: user.email,
+          customerMobile: user.mobile ?? "",
+          customerAddress: user.address ?? "",
         }}
       />
     </div>

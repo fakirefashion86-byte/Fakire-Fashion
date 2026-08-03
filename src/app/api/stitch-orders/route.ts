@@ -2,28 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-const measurementsSchema = z.object({
-  length: z.number().optional(),
-  shoulder: z.number().optional(),
-  sleeves: z.number().optional(),
-  upperChest: z.number().optional(),
-  belly: z.number().optional(),
-  hip: z.number().optional(),
-  collar: z.number().optional(),
-  cuff: z.number().optional(),
-  front: z.number().optional(),
-  waist: z.number().optional(),
-  thigh: z.number().optional(),
-  knee: z.number().optional(),
-  bottom: z.number().optional(),
-  crossPocket: z.boolean().optional(),
-  platePant: z.boolean().optional(),
-  frontBack: z.boolean().optional(),
-  sleevesBottom: z.number().optional(),
-  frontNeck: z.number().optional(),
-  backNeck: z.number().optional(),
-});
+import { measurementsSchema } from "@/lib/stitchMeasurements";
 
 const createSchema = z.object({
   stitchCategoryId: z.number().int(),
@@ -32,6 +11,8 @@ const createSchema = z.object({
   customerEmail: z.string().email(),
   customerMobile: z.string().min(1),
   customerAddress: z.string().min(1),
+  preferredDate: z.string().min(1),
+  preferredTimeSlot: z.string().min(1),
 });
 
 export async function GET() {
@@ -71,6 +52,8 @@ export async function POST(req: NextRequest) {
       customerEmail: parsed.data.customerEmail,
       customerMobile: parsed.data.customerMobile,
       customerAddress: parsed.data.customerAddress,
+      preferredDate: new Date(parsed.data.preferredDate),
+      preferredTimeSlot: parsed.data.preferredTimeSlot,
       status: "not_started",
     },
   });

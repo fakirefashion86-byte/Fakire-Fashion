@@ -203,6 +203,12 @@ body {
   outline: none;
   box-shadow: 0 0 0 1px var(--gold);
 }
+/* Native <option> popups render with the browser's own (light) background,
+   ignoring the translucent dark .glass-input styling, so text must be dark here. */
+.glass-input option {
+  color: #111;
+  background: #fff;
+}
 
 /* Floating Label */
 .floating-label-group {

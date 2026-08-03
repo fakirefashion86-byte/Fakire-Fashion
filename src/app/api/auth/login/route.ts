@@ -6,6 +6,7 @@ import { verifyPassword, setSessionCookie } from "@/lib/auth";
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
+  rememberMe: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid email or password" }, { status: 400 });
   }
-  const { email, password } = parsed.data;
+  const { email, password, rememberMe } = parsed.data;
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  await setSessionCookie({ userId: user.id, role: user.role });
+  await setSessionCookie({ userId: user.id, role: user.role }, { rememberMe });
 
   return NextResponse.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 }

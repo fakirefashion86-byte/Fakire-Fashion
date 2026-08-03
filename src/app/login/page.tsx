@@ -12,6 +12,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +23,7 @@ function LoginForm() {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, rememberMe }),
     });
     setLoading(false);
     if (!res.ok) {
@@ -52,7 +53,16 @@ function LoginForm() {
           onChange={setPassword}
           autoComplete="current-password"
         />
-        <div className="-mt-2 text-right">
+        <div className="-mt-2 flex items-center justify-between">
+          <label className="flex items-center gap-2 text-xs text-ink-secondary">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            Remember me
+          </label>
           <Link href="/forgot-password" className="text-xs text-accent hover:underline">
             Forgot password?
           </Link>

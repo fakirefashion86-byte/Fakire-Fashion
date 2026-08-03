@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = "session";
 const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+const REMEMBER_ME_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 if (!JWT_SECRET && process.env.NODE_ENV === "production") {
   throw new Error("JWT_SECRET environment variable is required in production");
@@ -23,9 +24,9 @@ export function verifyPassword(password: string, hash: string) {
   return bcrypt.compare(password, hash);
 }
 
-export function signSession(payload: SessionPayload) {
+export function signSession(payload: SessionPayload, ttlSeconds: number = TOKEN_TTL_SECONDS) {
   return jwt.sign(payload, JWT_SECRET ?? "dev-only-secret", {
-    expiresIn: TOKEN_TTL_SECONDS,
+    expiresIn: ttlSeconds,
   });
 }
 
@@ -37,15 +38,18 @@ export function verifySession(token: string): SessionPayload | null {
   }
 }
 
-export async function setSessionCookie(payload: SessionPayload) {
-  const token = signSession(payload);
+export async function setSessionCookie(payload: SessionPayload, options?: { rememberMe?: boolean }) {
+  const rememberMe = options?.rememberMe ?? false;
+  const ttlSeconds = rememberMe ? REMEMBER_ME_TTL_SECONDS : TOKEN_TTL_SECONDS;
+  const token = signSession(payload, ttlSeconds);
   const store = await cookies();
   store.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: TOKEN_TTL_SECONDS,
+    // No maxAge => browser-session cookie, cleared on close, unless the user opted into "remember me".
+    ...(rememberMe ? { maxAge: ttlSeconds } : {}),
   });
 }
 
