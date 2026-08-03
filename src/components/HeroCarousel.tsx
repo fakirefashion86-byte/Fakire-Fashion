@@ -62,9 +62,9 @@ function buildSlides(
   heroAccent: string,
   heroSubheading: string,
 ): Slide[] {
-  const fallbackImage = "/images/Sherwani_Hero.png";
+  const fallbackImage = "/images/Sherwani_Hero.webp";
   const image = heroImageUrl || fallbackImage;
-  const weddingImage = "/images/Wedding-Collection-Hero.png";
+  const weddingImage = "/images/Wedding-Collection-Hero.webp";
 
   return [
     {
@@ -258,7 +258,7 @@ export default function HeroCarousel({
                     priority={index === 0}
                     quality={80}
                     sizes="(max-width: 640px) 65vw, 70vw"
-                    className="object-cover object-[85%_15%] sm:object-[80%_15%]"
+                    className="object-cover object-[46%_8%] sm:object-[55%_10%] lg:object-[65%_12%]"
                   />
                   {/* Colour tint overlay per slide */}
                   {slide.tintClassName && (
@@ -291,7 +291,7 @@ export default function HeroCarousel({
                   {isActive && (
                     <motion.div
                       key={slide.id}
-                      className="relative z-10 flex h-full flex-col justify-between px-5 pb-8 pt-14 sm:px-10 sm:pb-12 sm:pt-16 lg:px-16"
+                      className="relative z-10 flex h-full flex-col justify-between px-5 pb-5 pt-8 sm:px-10 sm:pb-12 sm:pt-16 lg:px-16"
                       variants={containerVariants}
                       initial="hidden"
                       animate="visible"
@@ -313,13 +313,13 @@ export default function HeroCarousel({
                           {slide.accent}
                         </motion.p>
 
-                        <motion.div variants={itemVariants} className="mt-6">
+                        <motion.div variants={itemVariants} className="mt-3 sm:mt-6">
                           <SectionDivider />
                         </motion.div>
 
                         <motion.p
                           variants={itemVariants}
-                          className="mt-6 max-w-[280px] font-sans text-[15px] font-normal leading-[1.75] text-white/75 sm:text-base lg:max-w-[320px]"
+                          className="mt-3 max-w-[280px] font-sans text-[13px] font-normal leading-[1.5] text-white/75 sm:mt-6 sm:text-base sm:leading-[1.75] lg:max-w-[320px]"
                         >
                           {slide.subheading}
                         </motion.p>
@@ -328,16 +328,16 @@ export default function HeroCarousel({
                         {slide.startingPrice && (
                           <motion.div
                             variants={priceVariants}
-                            className="mt-10 sm:mt-14"
+                            className="mt-5 sm:mt-14"
                           >
-                            <div className="mb-4 h-px w-10 bg-gold/40" />
+                            <div className="mb-2 h-px w-10 bg-gold/40 sm:mb-4" />
                             <p className="mb-1 font-sans text-[11px] font-semibold uppercase tracking-[2.5px] text-gold/90">
                               {slide.startingPriceLabel}
                             </p>
                             <p className="mb-1 font-sans text-[13px] font-medium tracking-wide text-white/55">
                               Starting at
                             </p>
-                            <p className="font-serif text-[clamp(2.5rem,8vw,3.8rem)] font-bold leading-none text-gold">
+                            <p className="font-serif text-[clamp(2.1rem,8vw,3.8rem)] font-bold leading-none text-gold">
                               {slide.startingPrice}
                             </p>
                           </motion.div>
@@ -349,7 +349,7 @@ export default function HeroCarousel({
                         <motion.div variants={itemVariants}>
                           <Link
                             href={slide.ctaHref}
-                            className="hero-cta-btn group inline-flex h-[54px] w-[210px] items-center justify-center gap-2.5 rounded-lg font-sans text-[15px] font-semibold tracking-wide text-[#0a0806] transition-all duration-300"
+                            className="hero-cta-btn group inline-flex h-[46px] w-[180px] items-center justify-center gap-2.5 rounded-lg font-sans text-[14px] font-semibold tracking-wide text-[#0a0806] transition-all duration-300 sm:h-[54px] sm:w-[210px] sm:text-[15px]"
                           >
                             <ScissorsIcon className="h-[18px] w-[18px] transition-transform duration-300 group-hover:rotate-[-15deg]" />
                             {slide.ctaLabel}
@@ -359,7 +359,7 @@ export default function HeroCarousel({
                         {/* Progress dots */}
                         <motion.div
                           variants={itemVariants}
-                          className="mt-6 flex items-center gap-2.5"
+                          className="mt-4 flex items-center gap-2.5 sm:mt-6"
                         >
                           {slides.map((s, i) => (
                             <button

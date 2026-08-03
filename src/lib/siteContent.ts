@@ -14,7 +14,7 @@ export const DEFAULT_HOMEPAGE_CONTENT: HomepageContent = {
   heroHeadingAccent: "You",
   heroSubheading:
     "Experience the perfect blend of tradition and style. Custom tailored ethnic wear for every occasion.",
-  heroImageUrl: "/images/Sherwani_Hero.png",
+  heroImageUrl: "/images/Sherwani_Hero.webp",
   ctaHeading: "Your Style, Your Fit.\nTailored To Perfection.",
   ctaButtonText: "Book Appointment",
 };

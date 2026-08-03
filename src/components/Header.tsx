@@ -21,7 +21,7 @@ export default async function Header() {
       <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5">
         <Link href="/" className="flex items-center gap-3">
           <Image
-            src="/images/Logo-icon.png"
+            src="/images/Logo-icon.webp"
             alt="Fakire Fashion"
             width={50}
             height={50}

@@ -108,13 +108,15 @@ body {
 
 /* ── Hero section ── */
 .hero-section {
-  height: calc(100vh - 72px);
-  min-height: 520px;
-  max-height: 780px;
+  height: 66vh;
+  min-height: 460px;
+  max-height: 600px;
 }
 @media (min-width: 640px) {
   .hero-section {
     height: 640px;
+    min-height: 0;
+    max-height: none;
   }
 }
 @media (min-width: 1024px) {
