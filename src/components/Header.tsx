@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import MobileMenu from "./MobileMenu";
 import LogoutButton from "./LogoutButton";
-import { SearchIcon, UserIcon, HeartIcon, ScissorsIcon, WhatsAppIcon } from "./icons";
+import { SearchIcon, UserIcon, HeartIcon, ScissorsIcon, TruckIcon, WhatsAppIcon } from "./icons";
 
 export default async function Header() {
   const session = await getSession();
@@ -86,23 +86,35 @@ export default async function Header() {
       </header>
 
       <div className="border-b border-black/5 bg-[#f3ede1]">
-        <div className="mx-auto flex h-11 max-w-6xl items-center justify-center gap-3 px-5 text-[13px] sm:gap-4">
+        <div className="mx-auto flex max-w-6xl divide-x divide-black/10 overflow-x-auto">
           <Link
             href="/stitching/new"
-            className="flex items-center gap-1.5 font-semibold uppercase tracking-wide text-gold hover:opacity-80"
+            className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 hover:opacity-80 sm:gap-3 sm:px-5 sm:py-3"
           >
-            <ScissorsIcon className="h-4 w-4" />
-            <span>Book Tailor Online</span>
+            <ScissorsIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
+            <span>
+              <span className="block text-xs font-semibold text-black sm:text-sm">Free Tailoring</span>
+              <span className="hidden text-xs text-black/60 sm:block">Perfect Fit Guaranteed</span>
+            </span>
           </Link>
-          <span aria-hidden className="h-4 w-px bg-black/15" />
+          <div className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 sm:gap-3 sm:px-5 sm:py-3">
+            <TruckIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
+            <span>
+              <span className="block text-xs font-semibold text-black sm:text-sm">Free Home Delivery</span>
+              <span className="hidden text-xs text-black/60 sm:block">Safe &amp; Fast Delivery</span>
+            </span>
+          </div>
           <a
             href="https://wa.me/919454282015"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 font-medium text-black hover:opacity-80"
+            className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 hover:opacity-80 sm:gap-3 sm:px-5 sm:py-3"
           >
-            <WhatsAppIcon className="h-4 w-4" />
-            <span>9454282015</span>
+            <WhatsAppIcon className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
+            <span>
+              <span className="block text-xs font-semibold text-black sm:text-sm">WhatsApp</span>
+              <span className="hidden text-xs text-black/60 sm:block">9454282015</span>
+            </span>
           </a>
         </div>
       </div>
