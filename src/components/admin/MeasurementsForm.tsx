@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { NUMBER_MEASUREMENT_FIELDS, BOOLEAN_MEASUREMENT_FIELDS } from "@/lib/stitchMeasurements";
+import { SHIRT_MEASUREMENT_FIELDS, PANT_MEASUREMENT_FIELDS, PANT_BOOLEAN_FIELDS } from "@/lib/stitchMeasurements";
 
-type Measurements = Record<string, number | boolean | undefined>;
+type Measurements = Record<string, number | string | boolean | undefined>;
+
+const ALL_TEXT_FIELDS = [...SHIRT_MEASUREMENT_FIELDS, ...PANT_MEASUREMENT_FIELDS];
 
 export default function MeasurementsForm({
   orderId,
@@ -16,11 +18,11 @@ export default function MeasurementsForm({
   const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(
-      NUMBER_MEASUREMENT_FIELDS.map((f) => [f.key, measurements[f.key] != null ? String(measurements[f.key]) : ""])
+      ALL_TEXT_FIELDS.map((f) => [f.key, measurements[f.key] != null ? String(measurements[f.key]) : ""])
     )
   );
   const [checks, setChecks] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(BOOLEAN_MEASUREMENT_FIELDS.map((f) => [f.key, Boolean(measurements[f.key])]))
+    Object.fromEntries(PANT_BOOLEAN_FIELDS.map((f) => [f.key, Boolean(measurements[f.key])]))
   );
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,8 +35,14 @@ export default function MeasurementsForm({
     const parsedMeasurements: Measurements = {
       ...Object.fromEntries(
         Object.entries(values)
-          .filter(([, v]) => v !== "")
-          .map(([k, v]) => [k, Number(v)])
+          .filter(([, v]) => v.trim() !== "")
+          .map(([k, v]) => {
+            const trimmed = v.trim();
+            const asNumber = Number(trimmed);
+            // Store as a number when it's purely numeric, otherwise keep the text as-is
+            // (e.g. tailor notes like "loose" or "34.5F").
+            return [k, trimmed !== "" && !Number.isNaN(asNumber) ? asNumber : trimmed];
+          })
       ),
       ...checks,
     };
@@ -53,35 +61,57 @@ export default function MeasurementsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <p className="text-sm font-medium">Measurements (inches)</p>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {NUMBER_MEASUREMENT_FIELDS.map((f) => (
-          <label key={f.key} className="text-xs text-ink-muted">
-            {f.label}
-            <input
-              type="number"
-              step="0.1"
-              value={values[f.key] ?? ""}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-              className="mt-1 w-full rounded border border-border px-2 py-1 text-sm text-foreground"
-            />
-          </label>
-        ))}
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div>
+        <p className="text-sm font-medium">Shirt / Kurta Measurements (inches)</p>
+        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {SHIRT_MEASUREMENT_FIELDS.map((f) => (
+            <label key={f.key} className="text-xs text-ink-muted">
+              {f.label}
+              <input
+                type="text"
+                inputMode="text"
+                value={values[f.key] ?? ""}
+                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                placeholder="e.g. 18 or 18.5"
+                className="mt-1 w-full rounded border border-border px-2 py-1 text-sm text-foreground"
+              />
+            </label>
+          ))}
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-4">
-        {BOOLEAN_MEASUREMENT_FIELDS.map((f) => (
-          <label key={f.key} className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={checks[f.key] ?? false}
-              onChange={(e) => setChecks((c) => ({ ...c, [f.key]: e.target.checked }))}
-              className="h-4 w-4 rounded border-border"
-            />
-            {f.label}
-          </label>
-        ))}
+      <div>
+        <p className="text-sm font-medium">Pant / Trouser Measurements (inches)</p>
+        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {PANT_MEASUREMENT_FIELDS.map((f) => (
+            <label key={f.key} className="text-xs text-ink-muted">
+              {f.label}
+              <input
+                type="text"
+                inputMode="text"
+                value={values[f.key] ?? ""}
+                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+                placeholder="e.g. 32 or 32.5"
+                className="mt-1 w-full rounded border border-border px-2 py-1 text-sm text-foreground"
+              />
+            </label>
+          ))}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-4">
+          {PANT_BOOLEAN_FIELDS.map((f) => (
+            <label key={f.key} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={checks[f.key] ?? false}
+                onChange={(e) => setChecks((c) => ({ ...c, [f.key]: e.target.checked }))}
+                className="h-4 w-4 rounded border-border"
+              />
+              {f.label}
+            </label>
+          ))}
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

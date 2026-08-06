@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import MobileMenu from "./MobileMenu";
 import LogoutButton from "./LogoutButton";
-import { SearchIcon, UserIcon, HeartIcon, ScissorsIcon, TruckIcon, WhatsAppIcon } from "./icons";
+import { SearchIcon, UserIcon, HeartIcon, DeliveryVanIcon, BookingCalendarIcon, WhatsAppIcon } from "./icons";
 
 export default async function Header() {
   const session = await getSession();
@@ -91,17 +91,17 @@ export default async function Header() {
             href="/stitching/new"
             className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 hover:opacity-80 sm:gap-3 sm:px-5 sm:py-3"
           >
-            <ScissorsIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
+            <BookingCalendarIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
             <span>
-              <span className="block text-xs font-semibold text-black sm:text-sm">Free Tailoring</span>
-              <span className="hidden text-xs text-black/60 sm:block">Perfect Fit Guaranteed</span>
+              <span className="block text-xs font-semibold text-black sm:text-sm">Easy &amp; Hassle-Free Tailor Booking</span>
+              <span className="hidden text-xs text-black/60 sm:block">Book your tailor in a few clicks</span>
             </span>
           </Link>
           <div className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 sm:gap-3 sm:px-5 sm:py-3">
-            <TruckIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
+            <DeliveryVanIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
             <span>
-              <span className="block text-xs font-semibold text-black sm:text-sm">Free Home Delivery</span>
-              <span className="hidden text-xs text-black/60 sm:block">Safe &amp; Fast Delivery</span>
+              <span className="block text-xs font-semibold text-black sm:text-sm">Free Pickup &amp; Delivery Service</span>
+              <span className="hidden text-xs text-black/60 sm:block">Straight to your doorstep</span>
             </span>
           </div>
           <a
@@ -112,7 +112,7 @@ export default async function Header() {
           >
             <WhatsAppIcon className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
             <span>
-              <span className="block text-xs font-semibold text-black sm:text-sm">WhatsApp</span>
+              <span className="block text-xs font-semibold text-black sm:text-sm">Chat on WhatsApp</span>
               <span className="hidden text-xs text-black/60 sm:block">9454282015</span>
             </span>
           </a>

@@ -41,7 +41,7 @@ export default function StitchOrderDetail({ order }: { order: Order }) {
       <div className="rounded-lg border border-border p-4">
         <MeasurementsForm
           orderId={order.id}
-          measurements={(order.measurements ?? {}) as Record<string, number | boolean | undefined>}
+          measurements={(order.measurements ?? {}) as Record<string, number | string | boolean | undefined>}
         />
       </div>
     </div>

@@ -253,6 +253,75 @@ export function WhatsAppIcon({ className }: IconProps) {
   );
 }
 
+export function DeliveryVanIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className}>
+      <path
+        d="M2 6.5a1 1 0 011-1h9.5a1 1 0 011 1V16H3a1 1 0 01-1-1V6.5z"
+        fill="currentColor"
+        opacity="0.15"
+      />
+      <path
+        d="M2 6.5a1 1 0 011-1h9.5a1 1 0 011 1V16H3a1 1 0 01-1-1V6.5z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.5 9.5H17l3.5 3V16h-7V9.5z"
+        fill="currentColor"
+        opacity="0.15"
+      />
+      <path
+        d="M13.5 9.5H17l3.5 3V16h-7V9.5z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <circle cx="7" cy="18.5" r="1.75" fill="currentColor" />
+      <circle cx="7" cy="18.5" r="1.75" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="17.5" cy="18.5" r="1.75" fill="currentColor" />
+      <circle cx="17.5" cy="18.5" r="1.75" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <path d="M9 18.5h6.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M15.5 11.5v2.5h3.7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function BookingCalendarIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className}>
+      <rect x="3" y="5" width="18" height="16" rx="2.5" fill="currentColor" opacity="0.12" />
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="16"
+        rx="2.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path d="M3 9.5h18" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M7.5 3v4M16.5 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="8" cy="13.2" r="1" fill="currentColor" />
+      <circle cx="12" cy="13.2" r="1" fill="currentColor" />
+      <circle cx="16" cy="13.2" r="1" fill="currentColor" />
+      <circle cx="8" cy="17" r="1" fill="currentColor" />
+      <path
+        d="M13 17.4l1.7 1.7 3-3.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function ChevronRightIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" className={className}>
