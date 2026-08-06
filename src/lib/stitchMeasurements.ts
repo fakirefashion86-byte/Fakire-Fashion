@@ -35,7 +35,15 @@ export const measurementsSchema = z.object({
   crossPocket: z.boolean().optional(),
   platePant: z.boolean().optional(),
   frontBack: z.boolean().optional(),
+
+  // Section titles — editable by tailor/admin per order (e.g. "Shirt Measurements"
+  // vs "Kurta Measurements"), default to the generic label when unset.
+  shirtSectionLabel: z.string().optional(),
+  pantSectionLabel: z.string().optional(),
 });
+
+export const DEFAULT_SHIRT_SECTION_LABEL = "Shirt / Kurta Measurements (inches)";
+export const DEFAULT_PANT_SECTION_LABEL = "Pant / Trouser Measurements (inches)";
 
 export const SHIRT_MEASUREMENT_FIELDS: { key: string; label: string }[] = [
   { key: "length", label: "Length" },

@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { SHIRT_MEASUREMENT_FIELDS, PANT_MEASUREMENT_FIELDS, PANT_BOOLEAN_FIELDS } from "@/lib/stitchMeasurements";
+import {
+  SHIRT_MEASUREMENT_FIELDS,
+  PANT_MEASUREMENT_FIELDS,
+  PANT_BOOLEAN_FIELDS,
+  DEFAULT_SHIRT_SECTION_LABEL,
+  DEFAULT_PANT_SECTION_LABEL,
+} from "@/lib/stitchMeasurements";
 
 type Measurements = Record<string, number | string | boolean | undefined>;
 
@@ -20,6 +26,12 @@ export default function MeasurementsForm({
     Object.fromEntries(
       ALL_TEXT_FIELDS.map((f) => [f.key, measurements[f.key] != null ? String(measurements[f.key]) : ""])
     )
+  );
+  const [shirtSectionLabel, setShirtSectionLabel] = useState(
+    (measurements.shirtSectionLabel as string | undefined) || DEFAULT_SHIRT_SECTION_LABEL
+  );
+  const [pantSectionLabel, setPantSectionLabel] = useState(
+    (measurements.pantSectionLabel as string | undefined) || DEFAULT_PANT_SECTION_LABEL
   );
   const [checks, setChecks] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(PANT_BOOLEAN_FIELDS.map((f) => [f.key, Boolean(measurements[f.key])]))
@@ -45,6 +57,8 @@ export default function MeasurementsForm({
           })
       ),
       ...checks,
+      shirtSectionLabel,
+      pantSectionLabel,
     };
 
     const res = await fetch(`/api/admin/stitch-orders/${orderId}`, {
@@ -63,7 +77,13 @@ export default function MeasurementsForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div>
-        <p className="text-sm font-medium">Shirt / Kurta Measurements (inches)</p>
+        <input
+          type="text"
+          value={shirtSectionLabel}
+          onChange={(e) => setShirtSectionLabel(e.target.value)}
+          aria-label="Shirt/Kurta section title"
+          className="w-full max-w-sm rounded border border-transparent bg-transparent px-1 py-0.5 text-sm font-medium text-foreground transition hover:border-border focus:border-border focus:bg-white focus:outline-none"
+        />
         <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {SHIRT_MEASUREMENT_FIELDS.map((f) => (
             <label key={f.key} className="text-xs text-ink-muted">
@@ -82,7 +102,13 @@ export default function MeasurementsForm({
       </div>
 
       <div>
-        <p className="text-sm font-medium">Pant / Trouser Measurements (inches)</p>
+        <input
+          type="text"
+          value={pantSectionLabel}
+          onChange={(e) => setPantSectionLabel(e.target.value)}
+          aria-label="Pant/Trouser section title"
+          className="w-full max-w-sm rounded border border-transparent bg-transparent px-1 py-0.5 text-sm font-medium text-foreground transition hover:border-border focus:border-border focus:bg-white focus:outline-none"
+        />
         <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {PANT_MEASUREMENT_FIELDS.map((f) => (
             <label key={f.key} className="text-xs text-ink-muted">
