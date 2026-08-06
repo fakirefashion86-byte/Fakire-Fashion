@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import MobileMenu from "./MobileMenu";
 import LogoutButton from "./LogoutButton";
-import { SearchIcon, UserIcon, HeartIcon, DeliveryVanIcon, BookingCalendarIcon, WhatsAppIcon } from "./icons";
+import { SearchIcon, UserIcon, HeartIcon } from "./icons";
 
 export default async function Header() {
   const session = await getSession();
@@ -15,8 +15,7 @@ export default async function Header() {
   const isAdmin = session?.role === "admin";
 
   return (
-    <>
-      <header className="sticky top-0 z-40 bg-black">
+    <header className="sticky top-0 z-40 bg-black">
         <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-5">
           <Link href="/" className="flex items-center gap-3">
             <Image
@@ -84,40 +83,5 @@ export default async function Header() {
           </div>
         </div>
       </header>
-
-      <div className="border-b border-black/5 bg-[#f3ede1]">
-        <div className="mx-auto flex max-w-6xl divide-x divide-black/10 overflow-x-auto">
-          <Link
-            href="/stitching/new"
-            className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 hover:opacity-80 sm:gap-3 sm:px-5 sm:py-3"
-          >
-            <BookingCalendarIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
-            <span>
-              <span className="block text-xs font-semibold text-black sm:text-sm">Easy &amp; Hassle-Free Tailor Booking</span>
-              <span className="hidden text-xs text-black/60 sm:block">Book your tailor in a few clicks</span>
-            </span>
-          </Link>
-          <div className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 sm:gap-3 sm:px-5 sm:py-3">
-            <DeliveryVanIcon className="h-5 w-5 shrink-0 text-gold sm:h-6 sm:w-6" />
-            <span>
-              <span className="block text-xs font-semibold text-black sm:text-sm">Free Pickup &amp; Delivery Service</span>
-              <span className="hidden text-xs text-black/60 sm:block">Straight to your doorstep</span>
-            </span>
-          </div>
-          <a
-            href="https://wa.me/919454282015"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-1 items-center justify-center gap-2 whitespace-nowrap px-2 py-2.5 hover:opacity-80 sm:gap-3 sm:px-5 sm:py-3"
-          >
-            <WhatsAppIcon className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" />
-            <span>
-              <span className="block text-xs font-semibold text-black sm:text-sm">Chat on WhatsApp</span>
-              <span className="hidden text-xs text-black/60 sm:block">9454282015</span>
-            </span>
-          </a>
-        </div>
-      </div>
-    </>
   );
 }

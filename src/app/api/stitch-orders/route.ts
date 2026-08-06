@@ -43,11 +43,25 @@ export async function POST(req: NextRequest) {
   });
   if (!category) return NextResponse.json({ error: "Invalid stitching category" }, { status: 400 });
 
+  // Carry forward the customer's most recent saved measurements so the tailor isn't starting
+  // from a blank form — they can still edit/overwrite them for this order.
+  let measurements = parsed.data.measurements;
+  if (!measurements || Object.keys(measurements).length === 0) {
+    const lastOrder = await prisma.stitchOrder.findFirst({
+      where: { userId: session.userId, NOT: { measurements: { equals: {} } } },
+      orderBy: { createdAt: "desc" },
+      select: { measurements: true },
+    });
+    if (lastOrder?.measurements) {
+      measurements = lastOrder.measurements as typeof measurements;
+    }
+  }
+
   const order = await prisma.stitchOrder.create({
     data: {
       userId: session.userId,
       stitchCategoryId: parsed.data.stitchCategoryId,
-      measurements: parsed.data.measurements,
+      measurements: measurements ?? {},
       customerName: parsed.data.customerName,
       customerEmail: parsed.data.customerEmail,
       customerMobile: parsed.data.customerMobile,

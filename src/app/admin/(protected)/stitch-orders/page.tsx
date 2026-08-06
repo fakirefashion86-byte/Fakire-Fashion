@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
 import VisitToggle from "@/components/admin/VisitToggle";
+import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
 import type { StitchStatus } from "@prisma/client";
 
 const STATUS_LABELS: Record<StitchStatus, string> = {
@@ -82,9 +83,12 @@ export default async function AdminStitchOrdersPage({ searchParams }: Props) {
                 <StitchStatusSelect orderId={o.id} status={o.status} />
               </td>
               <td className="py-2">
-                <Link href={`/admin/stitch-orders/${o.id}`} className="text-xs text-accent hover:underline">
-                  View / Measurements
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link href={`/admin/stitch-orders/${o.id}`} className="text-xs text-accent hover:underline">
+                    View / Measurements
+                  </Link>
+                  <DeleteOrderButton orderId={o.id} />
+                </div>
               </td>
             </tr>
           ))}

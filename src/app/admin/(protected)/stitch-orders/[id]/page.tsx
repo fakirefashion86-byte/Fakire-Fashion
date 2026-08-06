@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import StitchOrderDetail from "@/components/admin/StitchOrderDetail";
+import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
 
 export default async function AdminStitchOrderDetailPage({
   params,
@@ -20,7 +21,10 @@ export default async function AdminStitchOrderDetailPage({
       <Link href="/admin/stitch-orders" className="mb-4 inline-block text-sm text-accent hover:underline">
         ← Back to Stitching Orders
       </Link>
-      <h1 className="mb-6 text-2xl font-semibold">Order #{order.id}</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Order #{order.id}</h1>
+        <DeleteOrderButton orderId={order.id} redirectTo="/admin/stitch-orders" />
+      </div>
       <StitchOrderDetail order={order} />
     </div>
   );

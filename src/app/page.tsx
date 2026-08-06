@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
+import PromoStrip from "@/components/PromoStrip";
 import { getSession } from "@/lib/auth";
 import {
   AwardIcon,
@@ -64,6 +65,7 @@ export default async function HomePage() {
 
   return (
     <div>
+      <PromoStrip />
       <HeroCarousel
         heroImageUrl={content.heroImageUrl}
         heroHeading={content.heroHeading}
