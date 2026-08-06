@@ -8,6 +8,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { motion } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { ScissorsIcon } from "./icons";
+import RateListModal from "./RateListModal";
 
 type Slide = {
   id: string;
@@ -139,6 +140,7 @@ export default function HeroCarousel({
     autoplay.current,
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [rateListOpen, setRateListOpen] = useState(false);
 
   /* ── Progress bar (auto-advance timer visual) ── */
   const [progress, setProgress] = useState(0);
@@ -281,7 +283,7 @@ export default function HeroCarousel({
                           </motion.div>
                         )}
 
-                        <motion.div variants={itemVariants} className="shrink-0">
+                        <motion.div variants={itemVariants} className="flex shrink-0 flex-col items-start gap-2.5">
                           <Link
                             href={slide.ctaHref}
                             className="hero-cta-btn group inline-flex h-[42px] w-[160px] items-center justify-center gap-2.5 rounded-lg font-sans text-[13px] font-semibold tracking-wide text-[#0a0806] transition-all duration-300 sm:h-[50px] sm:w-[190px] sm:text-[14px]"
@@ -289,6 +291,13 @@ export default function HeroCarousel({
                             <ScissorsIcon className="h-4 w-4 transition-transform duration-300 group-hover:rotate-[-15deg]" />
                             {slide.ctaLabel}
                           </Link>
+                          <button
+                            type="button"
+                            onClick={() => setRateListOpen(true)}
+                            className="inline-flex h-[42px] w-[160px] items-center justify-center gap-2 rounded-lg border border-white/25 bg-black/20 font-sans text-[13px] font-semibold tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:border-gold/50 hover:bg-black/40 hover:text-gold sm:h-[50px] sm:w-[190px] sm:text-[14px]"
+                          >
+                            View Pricing
+                          </button>
                         </motion.div>
                       </div>
 
@@ -354,6 +363,8 @@ export default function HeroCarousel({
 
       {/* ── Bottom decorative line ── */}
       <div className="absolute bottom-0 left-0 right-0 z-20 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+
+      <RateListModal open={rateListOpen} onClose={() => setRateListOpen(false)} />
     </section>
   );
 }
