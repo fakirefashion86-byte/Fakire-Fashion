@@ -3,10 +3,12 @@ import { z } from "zod";
 import { requireStaff } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { measurementsSchema } from "@/lib/stitchMeasurements";
+import { notifyUser } from "@/lib/notifications";
 
 const updateSchema = z
   .object({
     status: z.enum(["not_started", "pending", "stitched", "out_for_delivery", "delivered"]).optional(),
+    bookingStatus: z.enum(["requested", "accepted", "rejected"]).optional(),
     visitCompleted: z.boolean().optional(),
     measurements: measurementsSchema.optional(),
   })
@@ -25,6 +27,30 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     where: { id: Number(id) },
     data: parsed.data,
   });
+
+  if (parsed.data.bookingStatus === "accepted") {
+    notifyUser(
+      order.userId,
+      "Booking accepted",
+      "Your tailor visit request has been accepted. We'll see you at the scheduled time.",
+      "/stitching/my-orders"
+    ).catch((err) => console.error("Booking notification failed", err));
+  } else if (parsed.data.bookingStatus === "rejected") {
+    notifyUser(
+      order.userId,
+      "Booking not accepted",
+      "Sorry, we couldn't accept your tailor visit request. Please try a different date/time.",
+      "/stitching/my-orders"
+    ).catch((err) => console.error("Booking notification failed", err));
+  } else if (parsed.data.status) {
+    notifyUser(
+      order.userId,
+      "Stitching order updated",
+      `Your stitching order status is now "${parsed.data.status.replace(/_/g, " ")}".`,
+      "/stitching/my-orders"
+    ).catch((err) => console.error("Stitch status notification failed", err));
+  }
+
   return NextResponse.json({ order });
 }
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
 import VisitToggle from "@/components/admin/VisitToggle";
+import BookingStatusActions from "@/components/admin/BookingStatusActions";
 import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
 import type { StitchStatus } from "@prisma/client";
 
@@ -60,6 +61,7 @@ export default async function AdminStitchOrdersPage({ searchParams }: Props) {
             <th className="py-2">Garment</th>
             <th className="py-2">Contact</th>
             <th className="py-2">Visit Schedule</th>
+            <th className="py-2">Booking</th>
             <th className="py-2">Visit Status</th>
             <th className="py-2">Status</th>
             <th className="py-2"></th>
@@ -75,6 +77,9 @@ export default async function AdminStitchOrdersPage({ searchParams }: Props) {
               </td>
               <td className="py-2 text-ink-muted">
                 {o.preferredDate.toDateString()} · {o.preferredTimeSlot}
+              </td>
+              <td className="py-2">
+                <BookingStatusActions orderId={o.id} bookingStatus={o.bookingStatus} />
               </td>
               <td className="py-2">
                 <VisitToggle orderId={o.id} completed={o.visitCompleted} />

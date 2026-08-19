@@ -64,7 +64,19 @@ export default async function HomePage() {
     : new Set<number>();
 
   return (
-    <div>
+    <div
+      className="bg-background text-foreground"
+      style={
+        {
+          // Landing page keeps its original warm palette — the global
+          // --background/--foreground tokens were changed to pure white/black
+          // for the rest of the site, so this page pins its own values back.
+          "--background": "#f8f6f2",
+          "--bg-section": "#fcfbf8",
+          "--foreground": "#1f1f1f",
+        } as React.CSSProperties
+      }
+    >
       <PromoStrip />
       <HeroCarousel
         heroImageUrl={content.heroImageUrl}

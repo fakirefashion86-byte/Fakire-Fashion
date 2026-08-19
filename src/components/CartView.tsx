@@ -15,6 +15,7 @@ type CartItem = {
 export default function CartView() {
   const router = useRouter();
   const [items, setItems] = useState<CartItem[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/cart");
@@ -28,11 +29,16 @@ export default function CartView() {
 
   async function updateQty(id: number, qty: number) {
     if (qty < 1) return;
-    await fetch(`/api/cart/${id}`, {
+    setError(null);
+    const res = await fetch(`/api/cart/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ qty }),
     });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? "Could not update quantity");
+    }
     load();
   }
 
@@ -61,6 +67,7 @@ export default function CartView() {
 
   return (
     <div>
+      {error && <p className="mb-4 text-sm text-error">{error}</p>}
       <div className="flex flex-col gap-4">
         {items.map((item) => {
           const price = Number(item.variant?.price ?? item.product.price);
@@ -94,14 +101,19 @@ export default function CartView() {
         })}
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <p className="text-lg font-semibold">Total: ₹{total.toFixed(0)}</p>
-        <button
-          onClick={() => router.push("/checkout")}
-          className="rounded bg-btn px-5 py-2.5 text-btn-text transition hover:bg-btn-hover"
-        >
-          Proceed to Checkout
-        </button>
+      <div className="mt-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <Link href="/" className="text-sm text-ink-secondary underline underline-offset-2">
+          ← Continue shopping
+        </Link>
+        <div className="flex items-center gap-4">
+          <p className="text-lg font-semibold">Total: ₹{total.toFixed(0)}</p>
+          <button
+            onClick={() => router.push("/checkout")}
+            className="rounded bg-btn px-5 py-2.5 text-btn-text transition hover:bg-btn-hover"
+          >
+            Proceed to Checkout
+          </button>
+        </div>
       </div>
     </div>
   );

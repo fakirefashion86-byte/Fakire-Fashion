@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 import ProductGallery from "@/components/ProductGallery";
+import AddToCartPanel from "@/components/AddToCartPanel";
 import {
   StarIcon,
   CalendarIcon,
@@ -23,12 +25,16 @@ export default async function ProductPage({ params }: Props) {
   const productId = Number(id);
   if (!Number.isInteger(productId)) notFound();
 
-  const product = await prisma.product.findUnique({
-    where: { id: productId },
-    include: {
-      images: { orderBy: { sortOrder: "asc" } },
-    },
-  });
+  const [product, session] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        images: { orderBy: { sortOrder: "asc" } },
+        variants: { orderBy: [{ size: "asc" }, { color: "asc" }] },
+      },
+    }),
+    getSession(),
+  ]);
 
   if (!product || !product.status) notFound();
 
@@ -54,6 +60,23 @@ export default async function ProductPage({ params }: Props) {
               <span className="text-base text-ink-muted line-through">₹{Number(product.mrp).toFixed(0)}</span>
             )}
           </div>
+
+          {product.description && (
+            <p className="mt-4 text-sm leading-relaxed text-ink-secondary">{product.description}</p>
+          )}
+
+          <AddToCartPanel
+            productId={product.id}
+            variants={product.variants.map((v) => ({
+              id: v.id,
+              size: v.size,
+              color: v.color,
+              price: v.price.toString(),
+              mrp: v.mrp.toString(),
+              qty: v.qty,
+            }))}
+            loggedIn={Boolean(session)}
+          />
         </div>
       </div>
 

@@ -2,12 +2,12 @@
 
 :root {
   /* Surfaces */
-  --background: #f8f6f2;
-  --bg-section: #fcfbf8;
+  --background: #ffffff;
+  --bg-section: #ffffff;
   --card: #ffffff;
 
   /* Text */
-  --foreground: #1f1f1f;
+  --foreground: #000000;
   --ink-secondary: #666666;
   --ink-muted: #8b8b8b;
   --ink-invert: #f3eee7;
@@ -291,4 +291,12 @@ body {
 }
 .liquid-btn:disabled::after {
   display: none;
+}
+
+/* Invoice printing: hide site chrome so only the invoice content prints. */
+@media print {
+  header,
+  footer {
+    display: none !important;
+  }
 }

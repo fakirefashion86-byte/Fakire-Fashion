@@ -30,12 +30,56 @@ enum OrderStatus {
   cancelled
 }
 
+// Only COD is active today; the rest exist so the checkout/order flow doesn't
+// need restructuring when an online gateway is wired in later.
+enum PaymentMethod {
+  COD
+  RAZORPAY
+  UPI
+  CARD
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+}
+
 enum StitchStatus {
   not_started
   pending
   stitched
   out_for_delivery
   delivered
+}
+
+// A booking request lifecycle sits ahead of StitchStatus (which tracks work-in-progress
+// once a booking is accepted). requested -> accepted/rejected by admin/tailor.
+enum BookingStatus {
+  requested
+  accepted
+  rejected
+}
+
+enum FeedbackStatus {
+  pending
+  approved
+  hidden
+}
+
+enum ComplaintStatus {
+  open
+  in_progress
+  resolved
+}
+
+// Who a notification is for: a specific customer (userId set), or a broadcast to
+// all staff (userId null, audience = admin/tailor).
+enum NotificationAudience {
+  customer
+  admin
+  tailor
 }
 
 model User {
@@ -51,12 +95,43 @@ model User {
   approved     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  cartItems     CartItem[]
-  orders        Order[]
-  stitchOrders  StitchOrder[]
-  wishlistItems WishlistItem[]
+  cartItems      CartItem[]
+  orders         Order[]
+  stitchOrders   StitchOrder[]
+  wishlistItems  WishlistItem[]
+  addresses      Address[]
+  stitchFeedback StitchFeedback[]
+  complaints     Complaint[]
+  notifications  Notification[]
 
   @@map("users")
+}
+
+// A customer's saved delivery location (Home / Work / Other). Orders copy these
+// fields at checkout time rather than referencing this row, so editing or
+// deleting a saved address never changes a past order's delivery details.
+model Address {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  label       String   @default("Home")
+  addressLine String
+  houseNumber String?
+  area        String?
+  landmark    String?
+  city        String
+  state       String
+  pincode     String
+  country     String   @default("India")
+  latitude    Float?
+  longitude   Float?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
 }
 
 model Category {
@@ -154,23 +229,43 @@ model CartItem {
 }
 
 model Order {
-  id               Int         @id @default(autoincrement())
-  orderNumber      String      @unique
+  id               Int           @id @default(autoincrement())
+  orderNumber      String        @unique
   userId           Int
-  totalAmount      Decimal     @db.Decimal(10, 2)
-  discountAmount   Decimal     @db.Decimal(10, 2) @default(0)
-  netAmount        Decimal     @db.Decimal(10, 2)
-  shippingCharges  Decimal     @db.Decimal(10, 2) @default(0)
-  status           OrderStatus @default(pending)
+  totalAmount      Decimal       @db.Decimal(10, 2)
+  discountAmount   Decimal       @db.Decimal(10, 2) @default(0)
+  netAmount        Decimal       @db.Decimal(10, 2)
+  shippingCharges  Decimal       @db.Decimal(10, 2) @default(0)
+  status           OrderStatus   @default(pending)
+  paymentMethod    PaymentMethod @default(COD)
+  paymentStatus    PaymentStatus @default(pending)
   name             String
   email            String
   mobile           String
+  /// Full formatted address (kept for backward-compat display / search). Generated
+  /// from the structured fields below at order creation.
   address          String
-  createdAt        DateTime    @default(now())
+  addressLine      String        @default("")
+  houseNumber      String?
+  area             String?
+  landmark         String?
+  city             String        @default("")
+  state            String        @default("")
+  pincode          String        @default("")
+  country          String        @default("India")
+  latitude         Float?
+  longitude        Float?
+  /// Client-generated token (one per checkout attempt) so a retried/duplicated
+  /// submit (double-click, network retry) reuses the same order instead of
+  /// creating a second one.
+  clientToken      String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   user  User        @relation(fields: [userId], references: [id])
   items OrderItem[]
 
+  @@unique([userId, clientToken])
   @@map("orders")
 }
 
@@ -205,7 +300,7 @@ model StitchCategory {
 }
 
 model StitchOrder {
-  id                 Int          @id @default(autoincrement())
+  id                 Int           @id @default(autoincrement())
   userId             Int
   stitchCategoryId   Int
   measurements       Json
@@ -213,17 +308,83 @@ model StitchOrder {
   customerName       String
   customerEmail      String
   customerMobile     String
+  /// Full formatted address (kept for backward-compat display / search). Generated
+  /// from the structured fields below at booking creation.
   customerAddress    String
+  addressLine        String        @default("")
+  houseNumber        String?
+  area               String?
+  landmark           String?
+  city               String        @default("")
+  state              String        @default("")
+  pincode            String        @default("")
+  country            String        @default("India")
+  latitude           Float?
+  longitude          Float?
   preferredDate      DateTime
   preferredTimeSlot  String
-  visitCompleted     Boolean      @default(false)
-  status             StitchStatus @default(not_started)
-  createdAt          DateTime     @default(now())
+  visitCompleted     Boolean       @default(false)
+  bookingStatus      BookingStatus @default(requested)
+  status             StitchStatus  @default(not_started)
+  createdAt          DateTime      @default(now())
 
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stitchCategory StitchCategory @relation(fields: [stitchCategoryId], references: [id])
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stitchCategory StitchCategory  @relation(fields: [stitchCategoryId], references: [id])
+  feedback       StitchFeedback?
+  complaints     Complaint[]
 
   @@map("stitch_orders")
+}
+
+model StitchFeedback {
+  id            Int            @id @default(autoincrement())
+  stitchOrderId Int            @unique
+  userId        Int
+  rating        Int
+  comment       String?
+  status        FeedbackStatus @default(pending)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  stitchOrder StitchOrder @relation(fields: [stitchOrderId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("stitch_feedback")
+}
+
+model Complaint {
+  id            Int             @id @default(autoincrement())
+  stitchOrderId Int
+  userId        Int
+  subject       String
+  description   String
+  status        ComplaintStatus @default(open)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  stitchOrder StitchOrder @relation(fields: [stitchOrderId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([stitchOrderId])
+  @@map("complaints")
+}
+
+model Notification {
+  id        Int                  @id @default(autoincrement())
+  /// Set for a customer-targeted notification; null for a staff broadcast (see audience).
+  userId    Int?
+  audience  NotificationAudience
+  title     String
+  message   String
+  link      String?
+  read      Boolean              @default(false)
+  createdAt DateTime             @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([audience])
+  @@map("notifications")
 }
 
 model WishlistItem {

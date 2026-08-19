@@ -34,19 +34,41 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   const { productId, variantId, qty } = parsed.data;
 
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: { variants: true },
+  });
   if (!product || !product.status) {
     return NextResponse.json({ error: "Product not available" }, { status: 404 });
+  }
+
+  let variant = null;
+  if (product.variants.length > 0) {
+    if (variantId == null) {
+      return NextResponse.json({ error: "Please select a size and color" }, { status: 400 });
+    }
+    variant = product.variants.find((v) => v.id === variantId) ?? null;
+    if (!variant) {
+      return NextResponse.json({ error: "Selected option is not available" }, { status: 400 });
+    }
   }
 
   const existing = await prisma.cartItem.findFirst({
     where: { userId: session.userId, productId, variantId: variantId ?? null },
   });
 
+  const desiredQty = (existing?.qty ?? 0) + qty;
+  if (variant && desiredQty > variant.qty) {
+    return NextResponse.json(
+      { error: variant.qty === 0 ? "This option is out of stock" : `Only ${variant.qty} left in stock` },
+      { status: 400 }
+    );
+  }
+
   const item = existing
     ? await prisma.cartItem.update({
         where: { id: existing.id },
-        data: { qty: existing.qty + qty },
+        data: { qty: desiredQty },
       })
     : await prisma.cartItem.create({
         data: { userId: session.userId, productId, variantId, qty },

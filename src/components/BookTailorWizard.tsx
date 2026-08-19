@@ -2,13 +2,18 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import DeliveryAddressSection, {
+  EMPTY_DELIVERY_ADDRESS,
+  type DeliveryAddressValue,
+} from "@/components/DeliveryAddressSection";
 
 type CustomerValues = {
   customerName: string;
   customerEmail: string;
   customerMobile: string;
-  customerAddress: string;
 };
+
+const SERVICE_CITY = "lucknow";
 
 type Category = {
   id: number;
@@ -36,6 +41,7 @@ export default function BookTailorForm({
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTimeSlot, setPreferredTimeSlot] = useState("");
   const [customer, setCustomer] = useState(defaultValues);
+  const [delivery, setDelivery] = useState<DeliveryAddressValue>(EMPTY_DELIVERY_ADDRESS);
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -60,11 +66,21 @@ export default function BookTailorForm({
     !!preferredTimeSlot &&
     !!customer.customerName &&
     !!customer.customerMobile &&
-    !!customer.customerAddress;
+    delivery.locationConfirmed &&
+    !!delivery.addressLine &&
+    !!delivery.city &&
+    !!delivery.state &&
+    !!delivery.pincode;
+
+  const isLucknow = delivery.city.trim().toLowerCase() === SERVICE_CITY;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
+    if (!isLucknow) {
+      setError("Sorry, home-visit tailor booking is currently available in Lucknow only.");
+      return;
+    }
     setError(null);
     setLoading(true);
 
@@ -78,14 +94,45 @@ export default function BookTailorForm({
           preferredDate,
           preferredTimeSlot,
           ...customer,
+          addressLine: delivery.addressLine,
+          houseNumber: delivery.houseNumber,
+          area: delivery.area,
+          landmark: delivery.landmark,
+          city: delivery.city,
+          state: delivery.state,
+          pincode: delivery.pincode,
+          country: delivery.country,
+          latitude: delivery.latitude,
+          longitude: delivery.longitude,
         }),
       });
 
+      const data = await res.json().catch(() => ({}));
       setLoading(false);
 
       if (!res.ok) {
-        setError("Could not submit your booking. Please try again.");
+        setError(data.error ?? "Could not submit your booking. Please try again.");
         return;
+      }
+
+      if (delivery.saveAs) {
+        fetch("/api/addresses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            label: delivery.saveAs,
+            addressLine: delivery.addressLine,
+            houseNumber: delivery.houseNumber,
+            area: delivery.area,
+            landmark: delivery.landmark,
+            city: delivery.city,
+            state: delivery.state,
+            pincode: delivery.pincode,
+            country: delivery.country,
+            latitude: delivery.latitude,
+            longitude: delivery.longitude,
+          }),
+        }).catch(() => {});
       }
 
       router.push("/stitching/my-orders");
@@ -215,18 +262,15 @@ export default function BookTailorForm({
           <label htmlFor="mobile" className="floating-label">Mobile Number</label>
         </div>
 
-        <div className="floating-label-group">
-          <textarea
-            id="address"
-            required
-            placeholder=" "
-            rows={3}
-            value={customer.customerAddress}
-            onChange={(e) => updateCustomer("customerAddress", e.target.value)}
-            className="floating-label-input resize-none"
-          />
-          <label htmlFor="address" className="floating-label">Visit Address</label>
-        </div>
+      </div>
+
+      <div className="rounded-xl bg-white p-4 text-foreground sm:p-5">
+        <DeliveryAddressSection value={delivery} onChange={setDelivery} />
+        {delivery.city && !isLucknow && (
+          <p className="mt-3 rounded border border-error/30 bg-error/10 p-2 text-xs text-error">
+            Home-visit tailor booking is currently available in Lucknow only.
+          </p>
+        )}
       </div>
 
       {error && <p className="text-sm text-error">{error}</p>}

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
+import NotificationBell from "@/components/NotificationBell";
 
 export default async function TailorLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -15,6 +16,7 @@ export default async function TailorLayout({ children }: { children: React.React
           <Link href="/tailor/settings" className="text-foreground/80 hover:text-accent-hover">
             Settings
           </Link>
+          <NotificationBell endpoint="/api/admin/notifications" />
           <LogoutButton />
         </div>
       </div>

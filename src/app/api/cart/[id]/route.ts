@@ -4,7 +4,10 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 async function assertOwnership(userId: number, cartItemId: number) {
-  const item = await prisma.cartItem.findUnique({ where: { id: cartItemId } });
+  const item = await prisma.cartItem.findUnique({
+    where: { id: cartItemId },
+    include: { variant: true },
+  });
   return item && item.userId === userId ? item : null;
 }
 
@@ -21,6 +24,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const body = await req.json().catch(() => null);
   const parsed = patchSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
+  if (owned.variant && parsed.data.qty > owned.variant.qty) {
+    return NextResponse.json(
+      { error: `Only ${owned.variant.qty} left in stock` },
+      { status: 400 }
+    );
+  }
 
   const item = await prisma.cartItem.update({
     where: { id: owned.id },

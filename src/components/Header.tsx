@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import MobileMenu from "./MobileMenu";
 import LogoutButton from "./LogoutButton";
+import NotificationBell from "./NotificationBell";
 import { SearchIcon, UserIcon, HeartIcon } from "./icons";
 
 export default async function Header() {
@@ -60,6 +61,7 @@ export default async function Header() {
                     My Orders
                   </Link>
                 )}
+                {!isStaff && <NotificationBell endpoint="/api/notifications" dark />}
                 <LogoutButton />
               </div>
             ) : (

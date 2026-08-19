@@ -11,7 +11,7 @@ export default async function NewStitchOrderPage() {
     prisma.stitchCategory.findMany({ where: { status: true }, orderBy: { name: "asc" } }),
     prisma.user.findUnique({
       where: { id: session.userId },
-      select: { name: true, email: true, mobile: true, address: true },
+      select: { name: true, email: true, mobile: true },
     }),
   ]);
 
@@ -36,7 +36,6 @@ export default async function NewStitchOrderPage() {
           customerName: user.name,
           customerEmail: user.email,
           customerMobile: user.mobile ?? "",
-          customerAddress: user.address ?? "",
         }}
       />
     </div>

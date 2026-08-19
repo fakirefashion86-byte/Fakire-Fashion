@@ -7,6 +7,9 @@ export default async function AdminDashboardPage() {
     stitchOrderCount,
     enquiryCount,
     pendingTailorCount,
+    pendingBookingCount,
+    pendingFeedbackCount,
+    openComplaintCount,
     recentOrders,
     recentStitchOrders,
   ] = await Promise.all([
@@ -14,6 +17,9 @@ export default async function AdminDashboardPage() {
     prisma.stitchOrder.count(),
     prisma.enquiry.count(),
     prisma.user.count({ where: { role: "tailor", approved: false } }),
+    prisma.stitchOrder.count({ where: { bookingStatus: "requested" } }),
+    prisma.stitchFeedback.count({ where: { status: "pending" } }),
+    prisma.complaint.count({ where: { status: { not: "resolved" } } }),
     prisma.order.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -29,14 +35,19 @@ export default async function AdminDashboardPage() {
   const stats = [
     { label: "Orders", value: orderCount, href: "/admin/orders" },
     { label: "Stitch Orders", value: stitchOrderCount, href: "/admin/stitch-orders" },
-    { label: "Enquiries", value: enquiryCount, href: "/admin/settings" },
+    { label: "Pending Bookings", value: pendingBookingCount, href: "/admin/stitch-orders" },
     { label: "Pending Tailors", value: pendingTailorCount, href: "/admin/tailors" },
+    { label: "Enquiries", value: enquiryCount, href: "/admin/settings" },
+    { label: "Feedback To Review", value: pendingFeedbackCount, href: "/admin/feedback" },
+    { label: "Open Complaints", value: openComplaintCount, href: "/admin/complaints" },
   ];
 
   const quickActions = [
     { href: "/admin/categories", label: "Manage Categories" },
     { href: "/admin/orders", label: "View Orders" },
     { href: "/admin/stitch-orders", label: "View Stitch Orders" },
+    { href: "/admin/feedback", label: "Feedback & Ratings" },
+    { href: "/admin/complaints", label: "Complaints" },
     { href: "/admin/customers", label: "View Customers" },
     { href: "/admin/tailors", label: "Manage Tailors" },
     { href: "/admin/settings", label: "Settings" },

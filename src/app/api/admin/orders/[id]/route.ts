@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { notifyUser } from "@/lib/notifications";
 
 const statusSchema = z.object({
   status: z.enum(["pending", "confirmed", "shipped", "delivered", "cancelled"]),
@@ -20,5 +21,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     where: { id: Number(id) },
     data: { status: parsed.data.status },
   });
+
+  notifyUser(
+    order.userId,
+    "Order status updated",
+    `Order ${order.orderNumber} is now ${parsed.data.status}.`,
+    `/orders/${order.id}`
+  ).catch((err) => console.error("Order status notification failed", err));
+
   return NextResponse.json({ order });
 }

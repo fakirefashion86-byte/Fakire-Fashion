@@ -2,6 +2,18 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import StitchOrderFeedbackComplaint from "@/components/StitchOrderFeedbackComplaint";
+
+const BOOKING_LABELS: Record<string, string> = {
+  requested: "Awaiting confirmation",
+  accepted: "Confirmed",
+  rejected: "Not accepted",
+};
+const BOOKING_COLORS: Record<string, string> = {
+  requested: "bg-border text-ink-muted",
+  accepted: "bg-success/10 text-success",
+  rejected: "bg-error/10 text-error",
+};
 
 const STATUS_LABELS: Record<string, string> = {
   not_started: "Not Started",
@@ -26,7 +38,7 @@ export default async function MyStitchOrdersPage() {
   const orders = await prisma.stitchOrder.findMany({
     where: { userId: session.userId },
     orderBy: { createdAt: "desc" },
-    include: { stitchCategory: true },
+    include: { stitchCategory: true, feedback: true, complaints: { orderBy: { createdAt: "desc" } } },
   });
 
   return (
@@ -43,13 +55,20 @@ export default async function MyStitchOrdersPage() {
         <div className="flex flex-col gap-4">
           {orders.map((order) => (
             <div key={order.id} className="rounded-lg border border-border p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-medium">{order.stitchCategory.name}</p>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_COLORS[order.status]}`}
-                >
-                  {STATUS_LABELS[order.status]}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${BOOKING_COLORS[order.bookingStatus]}`}
+                  >
+                    {BOOKING_LABELS[order.bookingStatus]}
+                  </span>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_COLORS[order.status]}`}
+                  >
+                    {STATUS_LABELS[order.status]}
+                  </span>
+                </div>
               </div>
               <p className="mt-1 text-sm text-ink-muted">
                 Submitted {order.createdAt.toDateString()}
@@ -58,6 +77,14 @@ export default async function MyStitchOrdersPage() {
                 Visit: {order.preferredDate.toDateString()} · {order.preferredTimeSlot}
               </p>
               <p className="mt-1 text-sm text-ink-muted">Delivery to: {order.customerAddress}</p>
+
+              {order.status === "delivered" && (
+                <StitchOrderFeedbackComplaint
+                  orderId={order.id}
+                  feedback={order.feedback}
+                  complaints={order.complaints}
+                />
+              )}
             </div>
           ))}
         </div>
