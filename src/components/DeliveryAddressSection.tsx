@@ -70,6 +70,9 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
   const [loadError, setLoadError] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [mode, setMode] = useState<"saved" | "picking" | "editing">("saved");
+  const [gpsLocating, setGpsLocating] = useState(false);
+  const [gpsError, setGpsError] = useState<string | null>(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,6 +130,37 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
     });
   }
 
+  // Raw-GPS fallback for while the Google Maps key isn't set up yet: no map
+  // library needed, just the browser's own Geolocation API. It can't reverse
+  // -geocode an address, so the customer still types that below — this just
+  // pins the exact spot alongside it so delivery/tailor staff can copy the
+  // coordinates into their own maps app and navigate from there.
+  function handleUseGpsOnly() {
+    setGpsError(null);
+    if (!("geolocation" in navigator)) {
+      setGpsError("Your browser doesn't support location access. Please fill in the address below.");
+      return;
+    }
+    setGpsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGpsLocating(false);
+        setGpsAccuracy(pos.coords.accuracy);
+        onChange({
+          ...value,
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          locationConfirmed: true,
+        });
+      },
+      () => {
+        setGpsLocating(false);
+        setGpsError("Couldn't access your location. You can still fill in the address below.");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  }
+
   function handleLocationConfirm(location: ConfirmedLocation) {
     onChange({
       addressLine: location.addressLine,
@@ -161,8 +195,8 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
                 onClick={() => selectSaved(addr)}
                 className={`rounded border p-3 text-left text-sm transition ${
                   selectedId === addr.id
-                    ? "border-accent bg-accent/5"
-                    : "border-border hover:border-accent"
+                    ? "border-black bg-black/5"
+                    : "border-border hover:border-black"
                 }`}
               >
                 <p className="font-medium">
@@ -180,7 +214,7 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
           <button
             type="button"
             onClick={startPicking}
-            className="self-start text-sm font-medium text-accent hover:underline"
+            className="self-start text-sm font-medium text-black hover:underline"
           >
             + Add New Address
           </button>
@@ -220,6 +254,37 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
                 : "Enter your delivery address below."}
             </div>
           )}
+
+          {value.locationSource !== "map" &&
+            (value.latitude == null || value.longitude == null ? (
+              <div className="flex flex-col gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleUseGpsOnly}
+                  disabled={gpsLocating}
+                  className="flex items-center justify-center gap-2 self-start rounded border border-accent px-3 py-2 text-sm font-medium text-accent transition hover:bg-accent hover:text-btn-text disabled:opacity-50"
+                >
+                  {gpsLocating ? "Locating…" : "📍 Pin my exact GPS location"}
+                </button>
+                <p className="text-xs text-ink-muted">
+                  No map yet — this just drops an exact pin alongside the address you type below, so
+                  delivery/tailor staff can copy it into their maps app and navigate to you precisely.
+                </p>
+                {gpsError && <p className="text-xs text-error">{gpsError}</p>}
+              </div>
+            ) : (
+              <div className="rounded border border-success/30 bg-success/10 p-3 text-sm text-success">
+                📍 Exact GPS pin captured{gpsAccuracy != null ? ` (±${Math.round(gpsAccuracy)}m accuracy)` : ""} —
+                delivery/tailor staff will be able to navigate straight to you.{" "}
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...value, latitude: null, longitude: null })}
+                  className="font-medium underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
 
           <div className="grid gap-3 sm:grid-cols-2">
             <input
@@ -291,7 +356,7 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
               <button
                 type="button"
                 onClick={() => setMode("picking")}
-                className="font-medium text-accent hover:underline"
+                className="font-medium text-black hover:underline"
               >
                 {value.locationSource === "map" ? "Change pin location" : "Pick location on map"}
               </button>

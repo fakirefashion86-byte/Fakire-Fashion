@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import OrderStatusSelect from "@/components/admin/OrderStatusSelect";
+import CopyCoordinatesButton from "@/components/CopyCoordinatesButton";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -122,14 +123,21 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                     Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to show a map preview here.
                   </p>
                 )}
-                <a
-                  href={googleMapsUrl!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block rounded bg-btn px-4 py-2 text-sm font-medium text-btn-text hover:bg-btn-hover"
-                >
-                  Open in Google Maps
-                </a>
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href={googleMapsUrl!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block rounded bg-btn px-4 py-2 text-sm font-medium text-btn-text hover:bg-btn-hover"
+                  >
+                    Open in Google Maps
+                  </a>
+                  <CopyCoordinatesButton latitude={order.latitude!} longitude={order.longitude!} />
+                </div>
+                <p className="mt-2 text-xs text-ink-muted">
+                  No API key yet? Copy the coordinates above and paste them into any maps app on your
+                  phone to start navigation.
+                </p>
               </div>
             ) : (
               <p className="mt-4 text-xs text-ink-muted">
