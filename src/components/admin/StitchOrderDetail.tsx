@@ -2,6 +2,7 @@ import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
 import VisitToggle from "@/components/admin/VisitToggle";
 import MeasurementsForm from "@/components/admin/MeasurementsForm";
 import BookingStatusActions from "@/components/admin/BookingStatusActions";
+import CopyCoordinatesButton from "@/components/CopyCoordinatesButton";
 
 type Order = {
   id: number;
@@ -53,6 +54,15 @@ export default function StitchOrderDetail({ order }: { order: Order }) {
             Visit: {order.preferredDate.toDateString()} · {order.preferredTimeSlot}
           </p>
         </div>
+        {order.latitude != null && order.longitude != null && (
+          <div className="mt-3">
+            <CopyCoordinatesButton
+              latitude={order.latitude}
+              longitude={order.longitude}
+              className="inline-flex items-center gap-1.5 rounded border border-border px-3 py-1.5 text-xs font-medium hover:bg-section"
+            />
+          </div>
+        )}
       </div>
 
       <div className="rounded-lg border border-border p-4">

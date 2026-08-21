@@ -56,7 +56,7 @@ export default function MobileMenu({
 
   return (
     <div className="md:hidden">
-      <button aria-label="Menu" onClick={() => setOpen(true)} className="p-1 text-header-text hover:text-gold">
+      <button aria-label="Menu" onClick={() => setOpen(true)} className="p-1 text-header-text hover:text-header-text/60">
         <MenuIcon className="h-6 w-6" />
       </button>
 

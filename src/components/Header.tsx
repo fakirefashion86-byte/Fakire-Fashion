@@ -32,32 +32,32 @@ export default async function Header() {
           </Link>
 
           <nav className="hidden flex-1 items-center justify-center gap-8 text-sm font-medium text-white md:flex">
-            <Link href="/category/women" className="hover:text-gold">
+            <Link href="/category/women" className="hover:text-white/60">
               Women
             </Link>
-            <Link href="/category/men" className="hover:text-gold">
+            <Link href="/category/men" className="hover:text-white/60">
               Men
             </Link>
-            <Link href="/stitching/new" className="hover:text-gold">
+            <Link href="/stitching/new" className="hover:text-white/60">
               Custom Stitching
             </Link>
-            <Link href="/contact" className="hover:text-gold">
+            <Link href="/contact" className="hover:text-white/60">
               Contact
             </Link>
           </nav>
 
           <div className="flex items-center gap-4">
-            <button aria-label="Search" className="hidden text-white hover:text-gold sm:block">
+            <button aria-label="Search" className="hidden text-white hover:text-white/60 sm:block">
               <SearchIcon className="h-5 w-5" />
             </button>
             {user ? (
               <div className="hidden items-center gap-4 md:flex">
-                <Link href="/account" className="flex items-center gap-1.5 text-sm text-white hover:text-gold">
+                <Link href="/account" className="flex items-center gap-1.5 text-sm text-white hover:text-white/60">
                   <UserIcon className="h-5 w-5" />
                   {user.name}
                 </Link>
                 {!isStaff && (
-                  <Link href="/orders" className="text-sm text-white hover:text-gold">
+                  <Link href="/orders" className="text-sm text-white hover:text-white/60">
                     My Orders
                   </Link>
                 )}
@@ -65,11 +65,11 @@ export default async function Header() {
                 <LogoutButton />
               </div>
             ) : (
-              <Link href="/login" className="hidden text-white hover:text-gold md:block" aria-label="Login">
+              <Link href="/login" className="hidden text-white hover:text-white/60 md:block" aria-label="Login">
                 <UserIcon className="h-5 w-5" />
               </Link>
             )}
-            <button aria-label="Wishlist" className="hidden text-white hover:text-gold sm:block">
+            <button aria-label="Wishlist" className="hidden text-white hover:text-white/60 sm:block">
               <HeartIcon className="h-5 w-5" />
             </button>
 

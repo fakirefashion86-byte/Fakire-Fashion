@@ -58,7 +58,7 @@ function buildSlides(
       subheading: "Heirloom craftsmanship for your most celebrated day.",
       imageUrl: weddingImage,
       imageAlt: "Model dressed in wedding ethnic wear",
-      tintClassName: "bg-[#7a3d3a]/[0.10]",
+      tintClassName: "bg-black/[0.10]",
       startingPriceLabel: "Coat Pant",
       startingPrice: "₹2,800",
       ctaHref: "/stitching/new",
@@ -71,7 +71,7 @@ function buildSlides(
       subheading: "Everyday elegance, tailored to quiet perfection.",
       imageUrl: "/images/Kurtaset-Hero.png",
       imageAlt: "Model wearing a tailored kurta set",
-      tintClassName: "bg-[#5c6b4a]/[0.10]",
+      tintClassName: "bg-black/[0.10]",
       startingPriceLabel: "Kurta Set",
       startingPrice: "₹1,200",
       ctaHref: "/stitching/new",
@@ -201,7 +201,7 @@ export default function HeroCarousel({
     >
       {/* Subtle ambient glow */}
       <div className="pointer-events-none absolute left-[-20%] top-[-30%] h-[600px] w-[600px] rounded-full opacity-[0.07]"
-           style={{ background: "radial-gradient(circle, #c6a664 0%, transparent 70%)" }} />
+           style={{ background: "radial-gradient(circle, #ffffff 0%, transparent 70%)" }} />
 
       <div className="embla h-full overflow-hidden" ref={emblaRef}>
         <div className="embla__container flex h-full">
@@ -316,7 +316,7 @@ export default function HeroCarousel({
                             <span
                               className={`block rounded-full transition-all duration-500 ${
                                 i === selectedIndex
-                                  ? "h-[6px] w-7 bg-gold shadow-[0_0_10px_rgba(198,166,100,0.5)]"
+                                  ? "h-[6px] w-7 bg-gold shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                                   : "h-[5px] w-[5px] bg-white/20 group-hover:bg-white/40"
                               }`}
                             />

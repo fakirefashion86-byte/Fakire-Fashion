@@ -84,7 +84,7 @@ export default function StitchOrderFeedbackComplaint({
                 type="button"
                 onClick={() => setRating(n)}
                 aria-label={`${n} star`}
-                className={`text-lg ${n <= rating ? "text-gold" : "text-border"}`}
+                className={`text-lg ${n <= rating ? "text-black" : "text-border"}`}
               >
                 ★
               </button>
