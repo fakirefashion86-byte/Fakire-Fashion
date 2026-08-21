@@ -69,7 +69,7 @@ export default function NotificationBell({
         type="button"
         aria-label="Notifications"
         onClick={() => setOpen((o) => !o)}
-        className={`relative ${dark ? "text-white hover:text-gold" : "text-foreground/80 hover:text-accent-hover"}`}
+        className={`relative ${dark ? "text-white hover:text-white/60" : "text-foreground/80 hover:text-accent-hover"}`}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
           <path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 0 0-4-5.65V5a2 2 0 1 0-4 0v.35A6 6 0 0 0 6 11v3.2a2 2 0 0 1-.6 1.4L4 17h5" strokeLinecap="round" strokeLinejoin="round" />

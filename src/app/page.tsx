@@ -65,19 +65,7 @@ export default async function HomePage() {
     : new Set<number>();
 
   return (
-    <div
-      className="bg-background text-foreground"
-      style={
-        {
-          // Landing page keeps its original warm palette — the global
-          // --background/--foreground tokens were changed to pure white/black
-          // for the rest of the site, so this page pins its own values back.
-          "--background": "#f8f6f2",
-          "--bg-section": "#fcfbf8",
-          "--foreground": "#1f1f1f",
-        } as React.CSSProperties
-      }
-    >
+    <div className="bg-background text-foreground">
       <PromoStrip />
       <HeroCarousel
         heroImageUrl={content.heroImageUrl}
@@ -147,7 +135,7 @@ export default async function HomePage() {
           <p className="whitespace-pre-line font-serif text-2xl text-btn-text">{content.ctaHeading}</p>
           <Link
             href="/stitching/new"
-            className="whitespace-nowrap rounded bg-accent px-6 py-3 text-sm font-semibold text-btn-text transition hover:bg-accent-hover"
+            className="whitespace-nowrap rounded bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/85"
           >
             {content.ctaButtonText}
           </Link>

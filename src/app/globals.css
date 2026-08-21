@@ -10,46 +10,47 @@
   --foreground: #000000;
   --ink-secondary: #666666;
   --ink-muted: #8b8b8b;
-  --ink-invert: #f3eee7;
+  --ink-invert: #f5f5f5;
 
   /* Structure */
-  --border: #e8e2da;
-  --divider: #efeae4;
+  --border: #e5e5e5;
+  --divider: #eeeeee;
 
-  /* Accent — warm walnut brown */
-  --accent: #7a5c45;
-  --accent-hover: #5f4636;
+  /* Accent — black, site is monochrome */
+  --accent: #000000;
+  --accent-hover: #333333;
 
   /* Buttons */
-  --btn: #2c2a29;
-  --btn-hover: #403a35;
+  --btn: #000000;
+  --btn-hover: #262626;
   --btn-text: #ffffff;
-  --btn-secondary-border: #d6cec6;
-  --btn-secondary-text: #2c2a29;
+  --btn-secondary-border: #cccccc;
+  --btn-secondary-text: #000000;
 
-  /* Status */
+  /* Status — kept in color: these are the only semantic exceptions to the
+     black/white palette (form errors, destructive actions, confirmations). */
   --success: #3f725a;
   --error: #b54a3a;
 
   /* Icons */
   --icon: #4a4a4a;
-  --icon-hover: #2c2a29;
+  --icon-hover: #000000;
 
   /* Shadow */
-  --shadow-soft: 0 10px 30px rgba(34, 34, 34, 0.05);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
 
-  /* Luxury hero palette */
-  --hero-ivory: #f7f3ed;
-  --hero-champagne: #efe7dc;
-  --hero-beige: #e8ded2;
-  --hero-warm: #ddd0c1;
-  --gold: #c6a664;
-  --dot-inactive: #d9d2c4;
+  /* Hero palette — was warm ivory/gold, now grayscale */
+  --hero-ivory: #ffffff;
+  --hero-champagne: #f5f5f5;
+  --hero-beige: #eeeeee;
+  --hero-warm: #e0e0e0;
+  --gold: #ffffff;
+  --dot-inactive: #cccccc;
 
   /* Header — always dark, editorial */
-  --header-bg: #15120e;
-  --header-text: #f5efe6;
-  --header-text-muted: #cfc6ba;
+  --header-bg: #000000;
+  --header-text: #ffffff;
+  --header-text-muted: #b3b3b3;
 }
 
 @theme inline {
@@ -124,11 +125,11 @@ body {
   }
 }
 
-/* Gold-gradient CTA with shimmer sweep */
+/* White CTA with shimmer sweep — was a gold gradient */
 .hero-cta-btn {
-  background: linear-gradient(135deg, #d4af5e 0%, #c6a664 40%, #b8943f 100%);
+  background: #ffffff;
   box-shadow:
-    0 2px 12px rgba(198, 166, 100, 0.35),
+    0 2px 12px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
@@ -153,7 +154,7 @@ body {
 }
 .hero-cta-btn:hover {
   box-shadow:
-    0 4px 20px rgba(198, 166, 100, 0.5),
+    0 4px 20px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
@@ -184,10 +185,10 @@ body {
 }
 .glass-card:hover {
   background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(198, 166, 100, 0.3); /* gold */
+  border-color: rgba(255, 255, 255, 0.3);
 }
 .glass-card-selected {
-  background: rgba(198, 166, 100, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   border-color: var(--gold);
 }
 
@@ -281,7 +282,7 @@ body {
 }
 .liquid-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(198, 166, 100, 0.4);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
 }
 .liquid-btn:disabled {
   opacity: 0.6;

@@ -49,7 +49,7 @@ export default async function ProductPage({ params }: Props) {
 
           <div className="mt-2 flex items-center gap-1.5">
             {Array.from({ length: 5 }).map((_, i) => (
-              <StarIcon key={i} filled={i < 4} className={`h-4 w-4 ${i < 4 ? "text-gold" : "text-border"}`} />
+              <StarIcon key={i} filled={i < 4} className={`h-4 w-4 ${i < 4 ? "text-black" : "text-border"}`} />
             ))}
             <span className="ml-1 text-sm text-ink-muted">250+ Happy Clients</span>
           </div>

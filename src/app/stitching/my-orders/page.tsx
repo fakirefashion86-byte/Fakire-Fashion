@@ -25,9 +25,9 @@ const STATUS_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   not_started: "bg-border text-ink-muted",
-  pending: "bg-yellow-100 text-yellow-800",
-  stitched: "bg-blue-100 text-blue-800",
-  out_for_delivery: "bg-purple-100 text-purple-800",
+  pending: "bg-black/10 text-black",
+  stitched: "border border-black/30 text-black",
+  out_for_delivery: "bg-black text-white",
   delivered: "bg-success/10 text-success",
 };
 
