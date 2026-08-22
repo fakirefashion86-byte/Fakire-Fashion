@@ -14,6 +14,12 @@ if (!JWT_SECRET && process.env.NODE_ENV === "production") {
 export type SessionPayload = {
   userId: number;
   role: "customer" | "admin" | "tailor";
+  // Carried in the JWT so the header/nav (rendered on every single page —
+  // see components/Header.tsx) can display the user's name straight from the
+  // cookie instead of hitting the DB on every navigation. Optional because
+  // sessions issued before this field existed won't have it; callers should
+  // fall back to a generic label rather than querying for it.
+  name?: string;
 };
 
 export function hashPassword(password: string) {

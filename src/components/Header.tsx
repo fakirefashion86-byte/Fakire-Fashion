@@ -1,17 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import MobileMenu from "./MobileMenu";
 import LogoutButton from "./LogoutButton";
 import NotificationBell from "./NotificationBell";
+import PushOptIn from "./PushOptIn";
 import { SearchIcon, UserIcon, HeartIcon } from "./icons";
 
+// This renders above every single page (root layout), and since it reads
+// cookies() it can't be statically cached — without Cache Components enabled,
+// that forces the whole tree to block on it for every navigation (see
+// node_modules/next/dist/docs/.../loading.md, "layout accesses uncached or
+// runtime data"). It used to also do a Prisma lookup here for the display
+// name, meaning a live DB round trip on *every* page load/navigation
+// sitewide. The name is carried in the session JWT instead (see lib/auth.ts)
+// so this stays a pure cookie read — no network call.
 export default async function Header() {
   const session = await getSession();
-  const user = session
-    ? await prisma.user.findUnique({ where: { id: session.userId }, select: { name: true } })
-    : null;
+  const user = session ? { name: session.name ?? "Account" } : null;
   const isStaff = session?.role === "admin" || session?.role === "tailor";
   const isAdmin = session?.role === "admin";
 
@@ -62,6 +68,7 @@ export default async function Header() {
                   </Link>
                 )}
                 {!isStaff && <NotificationBell endpoint="/api/notifications" dark />}
+                {!isStaff && <PushOptIn dark />}
                 <LogoutButton />
               </div>
             ) : (

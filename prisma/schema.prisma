@@ -103,6 +103,7 @@ model User {
   stitchFeedback StitchFeedback[]
   complaints     Complaint[]
   notifications  Notification[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -385,6 +386,24 @@ model Notification {
   @@index([userId])
   @@index([audience])
   @@map("notifications")
+}
+
+// A browser/device's Web Push subscription. Audience for staff broadcasts is
+// derived from the owning user's role at send time, same as Notification —
+// no separate audience column to keep in sync.
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 model WishlistItem {

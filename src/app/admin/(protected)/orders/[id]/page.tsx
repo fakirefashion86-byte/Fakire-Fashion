@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import OrderStatusSelect from "@/components/admin/OrderStatusSelect";
 import CopyCoordinatesButton from "@/components/CopyCoordinatesButton";
+import { buildDirectionsUrl } from "@/lib/directions";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -27,6 +28,13 @@ export default async function AdminOrderDetailPage({ params }: Props) {
   const googleMapsUrl = hasCoords
     ? `https://www.google.com/maps/search/?api=1&query=${order.latitude},${order.longitude}`
     : null;
+  const directionsUrl = buildDirectionsUrl({
+    latitude: order.latitude,
+    longitude: order.longitude,
+    address: [order.houseNumber, order.addressLine, order.area, order.city, order.state, order.pincode]
+      .filter(Boolean)
+      .join(", "),
+  });
 
   return (
     <div>
@@ -118,26 +126,41 @@ export default async function AdminOrderDetailPage({ params }: Props) {
                     width={640}
                     height={280}
                   />
-                ) : (
-                  <p className="mb-3 text-xs text-ink-muted">
-                    Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to show a map preview here.
-                  </p>
-                )}
+                ) : null}
                 <div className="flex flex-wrap gap-2">
+                  <a
+                    href={directionsUrl!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded bg-btn px-4 py-2 text-sm font-medium text-btn-text hover:bg-btn-hover"
+                  >
+                    🧭 Get Directions
+                  </a>
                   <a
                     href={googleMapsUrl!}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block rounded bg-btn px-4 py-2 text-sm font-medium text-btn-text hover:bg-btn-hover"
+                    className="inline-block rounded border border-border px-4 py-2 text-sm font-medium hover:bg-section"
                   >
                     Open in Google Maps
                   </a>
                   <CopyCoordinatesButton latitude={order.latitude!} longitude={order.longitude!} />
                 </div>
-                <p className="mt-2 text-xs text-ink-muted">
-                  No API key yet? Copy the coordinates above and paste them into any maps app on your
-                  phone to start navigation.
+              </div>
+            ) : directionsUrl ? (
+              <div className="mt-4">
+                <p className="mb-2 text-sm font-medium">📍 Location</p>
+                <p className="mb-2 text-xs text-ink-muted">
+                  No exact pin was captured — this will route to the typed address instead.
                 </p>
+                <a
+                  href={directionsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded bg-btn px-4 py-2 text-sm font-medium text-btn-text hover:bg-btn-hover"
+                >
+                  🧭 Get Directions
+                </a>
               </div>
             ) : (
               <p className="mt-4 text-xs text-ink-muted">

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export default async function AdminDashboardPage() {
   const [
+    productCount,
     orderCount,
     stitchOrderCount,
     enquiryCount,
@@ -13,6 +14,7 @@ export default async function AdminDashboardPage() {
     recentOrders,
     recentStitchOrders,
   ] = await Promise.all([
+    prisma.product.count(),
     prisma.order.count(),
     prisma.stitchOrder.count(),
     prisma.enquiry.count(),
@@ -33,6 +35,7 @@ export default async function AdminDashboardPage() {
   ]);
 
   const stats = [
+    { label: "Products", value: productCount, href: "/admin/products" },
     { label: "Orders", value: orderCount, href: "/admin/orders" },
     { label: "Stitch Orders", value: stitchOrderCount, href: "/admin/stitch-orders" },
     { label: "Pending Bookings", value: pendingBookingCount, href: "/admin/stitch-orders" },
@@ -43,6 +46,7 @@ export default async function AdminDashboardPage() {
   ];
 
   const quickActions = [
+    { href: "/admin/products", label: "Manage Products" },
     { href: "/admin/categories", label: "Manage Categories" },
     { href: "/admin/orders", label: "View Orders" },
     { href: "/admin/stitch-orders", label: "View Stitch Orders" },

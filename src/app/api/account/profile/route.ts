@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getSession } from "@/lib/auth";
+import { getSession, setSessionCookie } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
@@ -28,6 +28,11 @@ export async function PATCH(req: NextRequest) {
     },
     select: { name: true, email: true, mobile: true, address: true },
   });
+
+  // The header reads the display name straight off the session cookie (no
+  // DB call — see components/Header.tsx), so it has to be re-signed here or
+  // the nav would keep showing the old name until the next login.
+  await setSessionCookie({ userId: session.userId, role: session.role, name: user.name }, { rememberMe: true });
 
   return NextResponse.json({ user });
 }

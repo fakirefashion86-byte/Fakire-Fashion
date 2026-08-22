@@ -2,8 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { INPUT_CLASS, PRIMARY_BUTTON_CLASS } from "@/lib/formStyles";
 
 type Category = { id: number; name: string; subCategories: { id: number; name: string }[] };
+type VariantRow = { size: string; color: string; qty: string };
+
+let rowKey = 0;
+function newRow(): VariantRow & { key: number } {
+  return { key: rowKey++, size: "", color: "Default", qty: "0" };
+}
 
 export default function NewProductForm({ categories }: { categories: Category[] }) {
   const router = useRouter();
@@ -14,7 +21,8 @@ export default function NewProductForm({ categories }: { categories: Category[] 
   const [description, setDescription] = useState("");
   const [mrp, setMrp] = useState("");
   const [price, setPrice] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState([""]);
+  const [variants, setVariants] = useState<(VariantRow & { key: number })[]>([newRow()]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -23,9 +31,34 @@ export default function NewProductForm({ categories }: { categories: Category[] 
     [categories, categoryId]
   );
 
+  function updateVariant(key: number, patch: Partial<VariantRow>) {
+    setVariants((rows) => rows.map((r) => (r.key === key ? { ...r, ...patch } : r)));
+  }
+
+  function removeVariant(key: number) {
+    setVariants((rows) => rows.filter((r) => r.key !== key));
+  }
+
+  function updateImageUrl(index: number, value: string) {
+    setImageUrls((urls) => urls.map((u, i) => (i === index ? value : u)));
+  }
+
+  function removeImageUrl(index: number) {
+    setImageUrls((urls) => urls.filter((_, i) => i !== index));
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const cleanVariants = variants
+      .filter((v) => v.size.trim())
+      .map((v) => ({
+        size: v.size.trim(),
+        color: v.color.trim() || "Default",
+        qty: Number(v.qty) || 0,
+      }));
+
     setLoading(true);
     const res = await fetch("/api/admin/products", {
       method: "POST",
@@ -38,7 +71,8 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         description,
         mrp: Number(mrp),
         price: Number(price),
-        imageUrl: imageUrl || undefined,
+        imageUrls: imageUrls.map((u) => u.trim()).filter(Boolean),
+        variants: cleanVariants,
       }),
     });
     setLoading(false);
@@ -56,20 +90,20 @@ export default function NewProductForm({ categories }: { categories: Category[] 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-lg flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-4">
       <input
         required
         placeholder="Product name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="rounded border border-border px-3 py-2"
+        className={INPUT_CLASS}
       />
       <input
         required
         placeholder="Product code (unique)"
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        className="rounded border border-border px-3 py-2"
+        className={INPUT_CLASS}
       />
       <select
         value={categoryId}
@@ -77,7 +111,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
           setCategoryId(Number(e.target.value));
           setSubCategoryId("");
         }}
-        className="rounded border border-border px-3 py-2"
+        className={INPUT_CLASS}
       >
         {categories.map((c) => (
           <option key={c.id} value={c.id}>
@@ -89,7 +123,7 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         <select
           value={subCategoryId}
           onChange={(e) => setSubCategoryId(e.target.value ? Number(e.target.value) : "")}
-          className="rounded border border-border px-3 py-2"
+          className={INPUT_CLASS}
         >
           <option value="">No subcategory</option>
           {subCategories.map((s) => (
@@ -104,38 +138,112 @@ export default function NewProductForm({ categories }: { categories: Category[] 
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={3}
-        className="rounded border border-border px-3 py-2"
+        className={INPUT_CLASS}
       />
       <div className="flex gap-3">
         <input
           required
           type="number"
+          step="0.01"
           placeholder="MRP"
           value={mrp}
           onChange={(e) => setMrp(e.target.value)}
-          className="w-1/2 rounded border border-border px-3 py-2"
+          className={`w-1/2 ${INPUT_CLASS}`}
         />
         <input
           required
           type="number"
+          step="0.01"
           placeholder="Selling price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          className="w-1/2 rounded border border-border px-3 py-2"
+          className={`w-1/2 ${INPUT_CLASS}`}
         />
       </div>
-      <input
-        placeholder="Image URL (optional)"
-        value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)}
-        className="rounded border border-border px-3 py-2"
-      />
+
+      <div>
+        <p className="mb-2 text-sm font-medium">Photos</p>
+        <div className="flex flex-col gap-2">
+          {imageUrls.map((url, i) => (
+            <div key={i} className="flex gap-2">
+              <input
+                placeholder="Image URL"
+                value={url}
+                onChange={(e) => updateImageUrl(i, e.target.value)}
+                className={`flex-1 ${INPUT_CLASS}`}
+              />
+              {imageUrls.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeImageUrl(i)}
+                  className="rounded border border-border px-3 text-sm text-error hover:bg-section"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setImageUrls((urls) => [...urls, ""])}
+          className="mt-2 text-sm text-accent hover:underline"
+        >
+          + Add another photo
+        </button>
+      </div>
+
+      <div>
+        <p className="mb-2 text-sm font-medium">Sizes &amp; stock</p>
+        <p className="mb-2 text-xs text-ink-muted">
+          Add each size you stitch to sell, with how many are in stock right now.
+        </p>
+        <div className="flex flex-col gap-2">
+          {variants.map((v) => (
+            <div key={v.key} className="flex gap-2">
+              <input
+                placeholder="Size (e.g. S, M, 38)"
+                value={v.size}
+                onChange={(e) => updateVariant(v.key, { size: e.target.value })}
+                className={`w-28 ${INPUT_CLASS}`}
+              />
+              <input
+                placeholder="Color"
+                value={v.color}
+                onChange={(e) => updateVariant(v.key, { color: e.target.value })}
+                className={`flex-1 ${INPUT_CLASS}`}
+              />
+              <input
+                type="number"
+                min="0"
+                placeholder="Stock"
+                value={v.qty}
+                onChange={(e) => updateVariant(v.key, { qty: e.target.value })}
+                className={`w-24 ${INPUT_CLASS}`}
+              />
+              {variants.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeVariant(v.key)}
+                  className="rounded border border-border px-3 text-sm text-error hover:bg-section"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setVariants((rows) => [...rows, newRow()])}
+          className="mt-2 text-sm text-accent hover:underline"
+        >
+          + Add another size
+        </button>
+      </div>
+
       {error && <p className="text-sm text-error">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded bg-btn px-4 py-2 text-btn-text transition hover:bg-btn-hover disabled:opacity-50"
-      >
+      <button type="submit" disabled={loading} className={PRIMARY_BUTTON_CLASS}>
         {loading ? "Creating…" : "Create Product"}
       </button>
     </form>

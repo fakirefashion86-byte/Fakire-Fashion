@@ -12,11 +12,34 @@ type Props = {
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const { sub } = await searchParams;
+  // Cookie read only, no DB round trip — safe to resolve before the queries
+  // below so the (independent) wishlist lookup can run alongside them
+  // instead of waiting its turn after.
+  const session = await getSession();
 
-  const category = await prisma.category.findUnique({
-    where: { slug },
-    include: { subCategories: { orderBy: { name: "asc" } } },
-  });
+  // Products are fetched nested under the category (one round trip) instead
+  // of category -> then a second, dependent product query -> then a third
+  // wishlist query. The sub-category filter is applied in memory below since
+  // the product list per category is small; that trades a few dozen extra
+  // rows for cutting a whole network round trip to the DB.
+  const [category, wishlistedIds] = await Promise.all([
+    prisma.category.findUnique({
+      where: { slug },
+      include: {
+        subCategories: { orderBy: { name: "asc" } },
+        products: {
+          where: { status: true },
+          orderBy: { createdAt: "desc" },
+          include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
+        },
+      },
+    }),
+    session
+      ? prisma.wishlistItem
+          .findMany({ where: { userId: session.userId }, select: { productId: true } })
+          .then((rows) => new Set(rows.map((w) => w.productId)))
+      : Promise.resolve(new Set<number>()),
+  ]);
 
   if (!category) notFound();
 
@@ -24,27 +47,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     ? category.subCategories.find((s) => s.slug === sub)
     : undefined;
 
-  const products = await prisma.product.findMany({
-    where: {
-      categoryId: category.id,
-      status: true,
-      ...(activeSub ? { subCategoryId: activeSub.id } : {}),
-    },
-    orderBy: { createdAt: "desc" },
-    include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
-  });
-
-  const session = await getSession();
-  const wishlistedIds = session
-    ? new Set(
-        (
-          await prisma.wishlistItem.findMany({
-            where: { userId: session.userId },
-            select: { productId: true },
-          })
-        ).map((w) => w.productId)
-      )
-    : new Set<number>();
+  const products = activeSub
+    ? category.products.filter((p) => p.subCategoryId === activeSub.id)
+    : category.products;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">

@@ -3,25 +3,23 @@ import ProductCard from "@/components/ProductCard";
 import { getSession } from "@/lib/auth";
 
 export default async function AllProductsPage() {
-  const [session, products] = await Promise.all([
-    getSession(),
+  // Cookie read only, no DB round trip — resolve it first so the (session-
+  // dependent) wishlist query can be kicked off alongside the products query
+  // below instead of waiting for it to finish first.
+  const session = await getSession();
+
+  const [products, wishlistedIds] = await Promise.all([
     prisma.product.findMany({
       where: { status: true },
       orderBy: { createdAt: "desc" },
       include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
     }),
+    session
+      ? prisma.wishlistItem
+          .findMany({ where: { userId: session.userId }, select: { productId: true } })
+          .then((rows) => new Set(rows.map((w) => w.productId)))
+      : Promise.resolve(new Set<number>()),
   ]);
-
-  const wishlistedIds = session
-    ? new Set(
-        (
-          await prisma.wishlistItem.findMany({
-            where: { userId: session.userId },
-            select: { productId: true },
-          })
-        ).map((w) => w.productId)
-      )
-    : new Set<number>();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">

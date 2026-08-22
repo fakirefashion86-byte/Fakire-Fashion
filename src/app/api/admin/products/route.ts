@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -9,10 +10,18 @@ export async function GET() {
 
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
-    include: { category: true, subCategory: true, images: true },
+    include: { category: true, subCategory: true, images: true, variants: true },
   });
   return NextResponse.json({ products });
 }
+
+const variantSchema = z.object({
+  size: z.string().min(1),
+  color: z.string().min(1).default("Default"),
+  qty: z.number().int().nonnegative().default(0),
+  mrp: z.number().nonnegative().optional(),
+  price: z.number().nonnegative().optional(),
+});
 
 const createSchema = z.object({
   name: z.string().min(1),
@@ -22,7 +31,8 @@ const createSchema = z.object({
   description: z.string().optional(),
   mrp: z.number().nonnegative(),
   price: z.number().nonnegative(),
-  imageUrl: z.string().optional(),
+  imageUrls: z.array(z.string().min(1)).default([]),
+  variants: z.array(variantSchema).default([]),
   status: z.boolean().default(true),
 });
 
@@ -34,14 +44,42 @@ export async function POST(req: NextRequest) {
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
-  const { imageUrl, ...data } = parsed.data;
+  const { imageUrls, variants, ...data } = parsed.data;
 
-  const product = await prisma.product.create({
-    data: {
-      ...data,
-      ...(imageUrl ? { images: { create: [{ url: imageUrl, sortOrder: 0 }] } } : {}),
-    },
-  });
-
-  return NextResponse.json({ product });
+  try {
+    const product = await prisma.product.create({
+      data: {
+        ...data,
+        ...(imageUrls.length
+          ? { images: { create: imageUrls.map((url, i) => ({ url, sortOrder: i })) } }
+          : {}),
+        ...(variants.length
+          ? {
+              variants: {
+                create: variants.map((v) => ({
+                  size: v.size,
+                  color: v.color,
+                  qty: v.qty,
+                  mrp: v.mrp ?? data.mrp,
+                  price: v.price ?? data.price,
+                })),
+              },
+            }
+          : {}),
+      },
+    });
+    return NextResponse.json({ product });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      const target = (err.meta?.target as string[] | undefined) ?? [];
+      if (target.includes("code")) {
+        return NextResponse.json({ error: "That product code is already in use." }, { status: 409 });
+      }
+      return NextResponse.json(
+        { error: "Two sizes/colors are the same — each size/color combination must be unique." },
+        { status: 409 }
+      );
+    }
+    throw err;
+  }
 }

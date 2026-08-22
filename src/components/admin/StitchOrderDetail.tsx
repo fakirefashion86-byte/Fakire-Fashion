@@ -3,6 +3,7 @@ import VisitToggle from "@/components/admin/VisitToggle";
 import MeasurementsForm from "@/components/admin/MeasurementsForm";
 import BookingStatusActions from "@/components/admin/BookingStatusActions";
 import CopyCoordinatesButton from "@/components/CopyCoordinatesButton";
+import { buildDirectionsUrl } from "@/lib/directions";
 
 type Order = {
   id: number;
@@ -28,6 +29,11 @@ export default function StitchOrderDetail({ order }: { order: Order }) {
     order.latitude != null && order.longitude != null
       ? `https://www.google.com/maps/search/?api=1&query=${order.latitude},${order.longitude}`
       : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.customerAddress)}`;
+  const directionsUrl = buildDirectionsUrl({
+    latitude: order.latitude,
+    longitude: order.longitude,
+    address: order.customerAddress,
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -54,13 +60,23 @@ export default function StitchOrderDetail({ order }: { order: Order }) {
             Visit: {order.preferredDate.toDateString()} · {order.preferredTimeSlot}
           </p>
         </div>
-        {order.latitude != null && order.longitude != null && (
-          <div className="mt-3">
-            <CopyCoordinatesButton
-              latitude={order.latitude}
-              longitude={order.longitude}
-              className="inline-flex items-center gap-1.5 rounded border border-border px-3 py-1.5 text-xs font-medium hover:bg-section"
-            />
+        {directionsUrl && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <a
+              href={directionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded bg-btn px-3 py-1.5 text-xs font-medium text-btn-text hover:bg-btn-hover"
+            >
+              🧭 Get Directions
+            </a>
+            {order.latitude != null && order.longitude != null && (
+              <CopyCoordinatesButton
+                latitude={order.latitude}
+                longitude={order.longitude}
+                className="inline-flex items-center gap-1.5 rounded border border-border px-3 py-1.5 text-xs font-medium hover:bg-section"
+              />
+            )}
           </div>
         )}
       </div>

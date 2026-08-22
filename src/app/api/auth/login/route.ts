@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  await setSessionCookie({ userId: user.id, role: user.role }, { rememberMe });
+  await setSessionCookie({ userId: user.id, role: user.role, name: user.name }, { rememberMe });
 
   return NextResponse.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 }

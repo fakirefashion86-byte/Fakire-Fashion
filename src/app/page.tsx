@@ -37,8 +37,12 @@ const FEATURES = [
 ];
 
 export default async function HomePage() {
-  const [session, products, contentRow] = await Promise.all([
-    getSession(),
+  // Cookie read only, no DB round trip — resolve it first so the (session-
+  // dependent) wishlist query can run alongside the others below instead of
+  // waiting for them to finish first.
+  const session = await getSession();
+
+  const [products, contentRow, wishlistedIds] = await Promise.all([
     prisma.product.findMany({
       where: { status: true },
       orderBy: { createdAt: "desc" },
@@ -46,23 +50,17 @@ export default async function HomePage() {
       include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
     }),
     prisma.siteContent.findUnique({ where: { key: HOMEPAGE_CONTENT_KEY } }),
+    session
+      ? prisma.wishlistItem
+          .findMany({ where: { userId: session.userId }, select: { productId: true } })
+          .then((rows) => new Set(rows.map((w) => w.productId)))
+      : Promise.resolve(new Set<number>()),
   ]);
 
   const content: HomepageContent = {
     ...DEFAULT_HOMEPAGE_CONTENT,
     ...((contentRow?.data as Partial<HomepageContent>) ?? {}),
   };
-
-  const wishlistedIds = session
-    ? new Set(
-        (
-          await prisma.wishlistItem.findMany({
-            where: { userId: session.userId },
-            select: { productId: true },
-          })
-        ).map((w) => w.productId)
-      )
-    : new Set<number>();
 
   return (
     <div className="bg-background text-foreground">

@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     data: { name, email, passwordHash, mobile },
   });
 
-  await setSessionCookie({ userId: user.id, role: user.role });
+  await setSessionCookie({ userId: user.id, role: user.role, name: user.name });
 
   return NextResponse.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 }

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 import NotificationBell from "@/components/NotificationBell";
+import PushOptIn from "@/components/PushOptIn";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -12,6 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
         <div className="mb-6 flex items-center justify-end gap-4">
           <NotificationBell endpoint="/api/admin/notifications" />
+          <PushOptIn />
           <LogoutButton />
         </div>
         <div className="min-w-0 overflow-x-auto">{children}</div>

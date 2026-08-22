@@ -9,11 +9,10 @@ type Props = {
 };
 
 /**
- * Interim stand-in for a real navigation hand-off while we don't have a Google
- * Maps API key wired up: lets an admin/delivery person copy the raw pin so
- * they can paste it into whatever maps app they actually have open on their
- * phone (Google Maps, Apple Maps, etc.) and start turn-by-turn navigation
- * from there.
+ * Secondary option alongside the "Get Directions" link (see
+ * src/lib/directions.ts): lets an admin/delivery/tailor person copy the raw
+ * pin so they can paste it into whatever maps app they actually have open on
+ * their phone (Apple Maps, Waze, etc.) if they'd rather not use Google Maps.
  */
 export default function CopyCoordinatesButton({ latitude, longitude, className }: Props) {
   const [copied, setCopied] = useState(false);

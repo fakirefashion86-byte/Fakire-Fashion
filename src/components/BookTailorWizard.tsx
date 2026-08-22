@@ -27,6 +27,26 @@ const TIME_SLOTS = [
   "Evening (3 PM - 6 PM)",
 ];
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MOBILE_RE = /^[6-9]\d{9}$/;
+
+type FieldErrors = Partial<
+  Record<
+    | "garment"
+    | "date"
+    | "timeSlot"
+    | "customerName"
+    | "customerEmail"
+    | "customerMobile"
+    | "addressLine"
+    | "city"
+    | "state"
+    | "pincode"
+    | "location",
+    string
+  >
+>;
+
 export default function BookTailorForm({
   categories,
   defaultValues,
@@ -43,6 +63,7 @@ export default function BookTailorForm({
   const [customer, setCustomer] = useState(defaultValues);
   const [delivery, setDelivery] = useState<DeliveryAddressValue>(EMPTY_DELIVERY_ADDRESS);
 
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -60,23 +81,39 @@ export default function BookTailorForm({
     setStitchCategoryId("");
   }
 
-  const canSubmit =
-    stitchCategoryId !== "" &&
-    !!preferredDate &&
-    !!preferredTimeSlot &&
-    !!customer.customerName &&
-    !!customer.customerMobile &&
-    delivery.locationConfirmed &&
-    !!delivery.addressLine &&
-    !!delivery.city &&
-    !!delivery.state &&
-    !!delivery.pincode;
+  // Every required field is checked up front so a blank/invalid one is
+  // highlighted right where it is on submit — instead of the old behaviour
+  // of silently disabling the button with no indication of what's missing.
+  function validate(): FieldErrors {
+    const next: FieldErrors = {};
+    if (stitchCategoryId === "") next.garment = "Please select a garment type";
+    if (!preferredDate) next.date = "Please select a preferred date";
+    if (!preferredTimeSlot) next.timeSlot = "Please select a time slot";
+    if (!customer.customerName.trim()) next.customerName = "Full name is required";
+    if (!EMAIL_RE.test(customer.customerEmail.trim())) next.customerEmail = "Enter a valid email address";
+    if (!MOBILE_RE.test(customer.customerMobile.trim())) next.customerMobile = "Enter a valid 10-digit mobile number";
+    if (!delivery.locationConfirmed) {
+      next.location = "Please add your delivery address.";
+    } else if (delivery.locationSource === "map" && (delivery.latitude == null || delivery.longitude == null)) {
+      next.location = "Please confirm your delivery location on the map.";
+    }
+    if (!delivery.addressLine.trim()) next.addressLine = "Address is required";
+    if (!delivery.city.trim()) next.city = "City is required";
+    if (!delivery.state.trim()) next.state = "State is required";
+    if (!/^\d{6}$/.test(delivery.pincode.trim())) next.pincode = "Enter a valid 6-digit pincode";
+    return next;
+  }
 
   const isLucknow = delivery.city.trim().toLowerCase() === SERVICE_CITY;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
+    const validation = validate();
+    setErrors(validation);
+    if (Object.keys(validation).length > 0) {
+      setError(null);
+      return;
+    }
     if (!isLucknow) {
       setError("Sorry, home-visit tailor booking is currently available in Lucknow only.");
       return;
@@ -143,7 +180,7 @@ export default function BookTailorForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto glass-card p-6 md:p-8 rounded-2xl space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="w-full max-w-2xl mx-auto glass-card p-6 md:p-8 rounded-2xl space-y-6">
       <div>
         <label className="block text-sm font-medium text-white/80 mb-3">Garment For</label>
         <div className="grid grid-cols-2 gap-3">
@@ -170,8 +207,11 @@ export default function BookTailorForm({
           id="garment"
           required
           value={stitchCategoryId}
-          onChange={(e) => setStitchCategoryId(Number(e.target.value))}
-          className="w-full glass-input p-3 rounded-lg"
+          onChange={(e) => {
+            setStitchCategoryId(Number(e.target.value));
+            if (errors.garment) setErrors((prev) => ({ ...prev, garment: undefined }));
+          }}
+          className={`w-full glass-input p-3 rounded-lg ${errors.garment ? "border-error" : ""}`}
         >
           <option value="" disabled>
             Select a garment
@@ -182,6 +222,7 @@ export default function BookTailorForm({
             </option>
           ))}
         </select>
+        {errors.garment && <p className="mt-1.5 text-xs text-error">{errors.garment}</p>}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -194,10 +235,14 @@ export default function BookTailorForm({
             type="date"
             required
             value={preferredDate}
-            onChange={(e) => setPreferredDate(e.target.value)}
+            onChange={(e) => {
+              setPreferredDate(e.target.value);
+              if (errors.date) setErrors((prev) => ({ ...prev, date: undefined }));
+            }}
             min={new Date().toISOString().split("T")[0]}
-            className="w-full glass-input p-3 rounded-lg"
+            className={`w-full glass-input p-3 rounded-lg ${errors.date ? "border-error" : ""}`}
           />
+          {errors.date && <p className="mt-1.5 text-xs text-error">{errors.date}</p>}
         </div>
         <div>
           <label htmlFor="timeSlot" className="block text-sm font-medium text-white/80 mb-3">
@@ -207,8 +252,11 @@ export default function BookTailorForm({
             id="timeSlot"
             required
             value={preferredTimeSlot}
-            onChange={(e) => setPreferredTimeSlot(e.target.value)}
-            className="w-full glass-input p-3 rounded-lg"
+            onChange={(e) => {
+              setPreferredTimeSlot(e.target.value);
+              if (errors.timeSlot) setErrors((prev) => ({ ...prev, timeSlot: undefined }));
+            }}
+            className={`w-full glass-input p-3 rounded-lg ${errors.timeSlot ? "border-error" : ""}`}
           >
             <option value="" disabled>
               Select a time slot
@@ -219,6 +267,7 @@ export default function BookTailorForm({
               </option>
             ))}
           </select>
+          {errors.timeSlot && <p className="mt-1.5 text-xs text-error">{errors.timeSlot}</p>}
         </div>
       </div>
 
@@ -230,10 +279,14 @@ export default function BookTailorForm({
             required
             placeholder=" "
             value={customer.customerName}
-            onChange={(e) => updateCustomer("customerName", e.target.value)}
-            className="floating-label-input"
+            onChange={(e) => {
+              updateCustomer("customerName", e.target.value);
+              if (errors.customerName) setErrors((prev) => ({ ...prev, customerName: undefined }));
+            }}
+            className={`floating-label-input ${errors.customerName ? "border-error" : ""}`}
           />
           <label htmlFor="name" className="floating-label">Full Name</label>
+          {errors.customerName && <p className="mt-1.5 text-xs text-error">{errors.customerName}</p>}
         </div>
 
         <div className="floating-label-group">
@@ -243,10 +296,14 @@ export default function BookTailorForm({
             required
             placeholder=" "
             value={customer.customerEmail}
-            onChange={(e) => updateCustomer("customerEmail", e.target.value)}
-            className="floating-label-input"
+            onChange={(e) => {
+              updateCustomer("customerEmail", e.target.value);
+              if (errors.customerEmail) setErrors((prev) => ({ ...prev, customerEmail: undefined }));
+            }}
+            className={`floating-label-input ${errors.customerEmail ? "border-error" : ""}`}
           />
           <label htmlFor="email" className="floating-label">Email Address</label>
+          {errors.customerEmail && <p className="mt-1.5 text-xs text-error">{errors.customerEmail}</p>}
         </div>
 
         <div className="floating-label-group">
@@ -256,16 +313,20 @@ export default function BookTailorForm({
             required
             placeholder=" "
             value={customer.customerMobile}
-            onChange={(e) => updateCustomer("customerMobile", e.target.value)}
-            className="floating-label-input"
+            onChange={(e) => {
+              updateCustomer("customerMobile", e.target.value);
+              if (errors.customerMobile) setErrors((prev) => ({ ...prev, customerMobile: undefined }));
+            }}
+            className={`floating-label-input ${errors.customerMobile ? "border-error" : ""}`}
           />
           <label htmlFor="mobile" className="floating-label">Mobile Number</label>
+          {errors.customerMobile && <p className="mt-1.5 text-xs text-error">{errors.customerMobile}</p>}
         </div>
 
       </div>
 
       <div className="rounded-xl bg-white p-4 text-foreground sm:p-5">
-        <DeliveryAddressSection value={delivery} onChange={setDelivery} />
+        <DeliveryAddressSection value={delivery} onChange={setDelivery} errors={errors} />
         {delivery.city && !isLucknow && (
           <p className="mt-3 rounded border border-error/30 bg-error/10 p-2 text-xs text-error">
             Home-visit tailor booking is currently available in Lucknow only.
@@ -277,7 +338,7 @@ export default function BookTailorForm({
 
       <button
         type="submit"
-        disabled={!canSubmit || loading}
+        disabled={loading}
         className="liquid-btn w-full px-8 py-3 rounded-full"
       >
         {loading ? "Confirming..." : "Confirm Booking"}

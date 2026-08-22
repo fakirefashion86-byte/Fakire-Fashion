@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 import NotificationBell from "@/components/NotificationBell";
+import PushOptIn from "@/components/PushOptIn";
 
 export default async function TailorLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -17,6 +18,7 @@ export default async function TailorLayout({ children }: { children: React.React
             Settings
           </Link>
           <NotificationBell endpoint="/api/admin/notifications" />
+          <PushOptIn />
           <LogoutButton />
         </div>
       </div>

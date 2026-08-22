@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
 import VisitToggle from "@/components/admin/VisitToggle";
 import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
+import { buildDirectionsUrl } from "@/lib/directions";
 import type { StitchStatus } from "@prisma/client";
 
 const STATUS_LABELS: Record<StitchStatus, string> = {
@@ -109,6 +110,25 @@ export default async function TailorStitchOrdersPage({ searchParams }: Props) {
             <div className="mt-3 flex items-center justify-between border-t border-divider pt-3">
               <VisitToggle orderId={o.id} completed={o.visitCompleted} />
               <div className="flex items-center gap-3">
+                {(() => {
+                  const directionsUrl = buildDirectionsUrl({
+                    latitude: o.latitude,
+                    longitude: o.longitude,
+                    address: o.customerAddress,
+                  });
+                  return (
+                    directionsUrl && (
+                      <a
+                        href={directionsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-accent hover:underline"
+                      >
+                        🧭 Directions
+                      </a>
+                    )
+                  );
+                })()}
                 <Link href={`/tailor/stitch-orders/${o.id}`} className="text-xs text-accent hover:underline">
                   View / Measurements
                 </Link>
@@ -159,6 +179,25 @@ export default async function TailorStitchOrdersPage({ searchParams }: Props) {
                   </td>
                   <td className="py-2">
                     <div className="flex items-center gap-3">
+                      {(() => {
+                        const directionsUrl = buildDirectionsUrl({
+                          latitude: o.latitude,
+                          longitude: o.longitude,
+                          address: o.customerAddress,
+                        });
+                        return (
+                          directionsUrl && (
+                            <a
+                              href={directionsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-medium text-accent hover:underline"
+                            >
+                              🧭 Directions
+                            </a>
+                          )
+                        );
+                      })()}
                       <Link href={`/tailor/stitch-orders/${o.id}`} className="text-xs text-accent hover:underline">
                         View / Measurements
                       </Link>
