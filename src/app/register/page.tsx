@@ -105,7 +105,7 @@ function RegisterForm() {
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 sm:gap-4">
         <div>
           <label className={GOLD_LABEL_CLASS}>Full Name</label>
           <input
