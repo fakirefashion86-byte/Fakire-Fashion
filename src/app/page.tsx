@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Script from "next/script";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
@@ -108,11 +107,6 @@ export default async function HomePage() {
           style={{ width: 300, height: 250 }}
         />
       </section>
-      <Script
-        async
-        src="https://adsbender.onrender.com/assets/publisher_tag.js"
-        strategy="afterInteractive"
-      />
 
       {/* Feature strip */}
       <section className="border-y border-border bg-section">

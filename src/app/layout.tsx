@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -35,6 +36,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
+        <Script src="https://adsbender.com/publisher_tag.js" strategy="afterInteractive" />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

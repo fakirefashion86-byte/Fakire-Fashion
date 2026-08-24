@@ -35,15 +35,15 @@ const MOBILE_RE = /^[6-9]\d{9}$/;
 const PINCODE_RE = /^\d{6}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Strictly black/white/gray field + button styling for this wizard's own
-// chrome (contact form, buttons, cards). DeliveryAddressSection keeps its
-// own theme colors — it's shared with the tailor-booking wizard.
+// Blue accent for actions/progress, green for savings, amber/red for
+// warnings. DeliveryAddressSection keeps its own theme colors — it's
+// shared with the tailor-booking wizard.
 const FIELD_CLASS =
-  "w-full rounded border border-black/20 px-3 py-2.5 text-sm text-black outline-none transition placeholder:text-black/40 focus:border-black focus:ring-1 focus:ring-black";
+  "w-full rounded border border-black/20 px-3 py-2.5 text-sm text-black outline-none transition placeholder:text-black/40 focus:border-blue-600 focus:ring-1 focus:ring-blue-600";
 const PRIMARY_BTN =
-  "rounded bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-40";
+  "rounded bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40";
 const OUTLINE_BTN =
-  "rounded border border-black px-4 py-3 text-sm font-semibold text-black transition hover:bg-black hover:text-white";
+  "rounded border border-blue-600 px-4 py-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white";
 
 function validate(contact: ContactValues, delivery: DeliveryAddressValue): Errors {
   const errors: Errors = {};
@@ -78,21 +78,25 @@ function Stepper({ step }: { step: 1 | 2 | 3 }) {
           <div className="flex flex-col items-center gap-1.5">
             <span
               className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold ${
-                s.n <= step ? "border-black bg-black text-white" : "border-black/25 bg-white text-black/40"
+                s.n < step
+                  ? "border-green-600 bg-green-600 text-white"
+                  : s.n === step
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-black/25 bg-white text-black/40"
               }`}
             >
               {s.n < step ? "✓" : s.n}
             </span>
             <span
               className={`text-xs ${
-                s.n === step ? "font-semibold text-black" : s.n < step ? "text-black" : "text-black/40"
+                s.n === step ? "font-semibold text-blue-600" : s.n < step ? "text-green-600" : "text-black/40"
               }`}
             >
               {s.label}
             </span>
           </div>
           {i < STEPS.length - 1 && (
-            <span className={`mx-2 mb-5 h-px w-10 sm:w-20 ${s.n < step ? "bg-black" : "bg-black/15"}`} />
+            <span className={`mx-2 mb-5 h-px w-10 sm:w-20 ${s.n < step ? "bg-green-600" : "bg-black/15"}`} />
           )}
         </div>
       ))}
@@ -128,16 +132,16 @@ function PriceDetails({
         {discount > 0 && (
           <div className="flex justify-between text-black/70">
             <span>Discount</span>
-            <span>−₹{discount.toFixed(0)}</span>
+            <span className="font-medium text-green-600">−₹{discount.toFixed(0)}</span>
           </div>
         )}
         <div className="flex justify-between border-t border-black/15 pt-3 text-base font-semibold text-black">
           <span>Total Amount</span>
-          <span>₹{total.toFixed(0)}</span>
+          <span className="text-blue-700">₹{total.toFixed(0)}</span>
         </div>
       </div>
       {discount > 0 && (
-        <p className="mt-4 rounded bg-black/5 py-2 text-center text-sm font-medium text-black">
+        <p className="mt-4 rounded bg-green-50 py-2 text-center text-sm font-medium text-green-700">
           You will save ₹{discount.toFixed(0)} on this order
         </p>
       )}
@@ -303,14 +307,14 @@ export default function CheckoutForm({
                     </p>
                     <p className="text-sm text-black/70">{contact.mobile}</p>
                   </div>
-                  <button type="button" onClick={() => setStep(1)} className="shrink-0 rounded border border-black px-3 py-1.5 text-xs font-semibold text-black transition hover:bg-black hover:text-white">
+                  <button type="button" onClick={() => setStep(1)} className="shrink-0 rounded border border-blue-600 px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
                     Change
                   </button>
                 </div>
               </div>
 
               {!canSubmit && (
-                <p className="rounded border border-black bg-black/5 p-3 text-sm text-black">
+                <p className="rounded border border-amber-400 bg-amber-50 p-3 text-sm text-amber-800">
                   Some items in your cart exceed available stock. Please{" "}
                   <a href="/cart" className="underline">
                     update your cart
@@ -336,12 +340,17 @@ export default function CheckoutForm({
                           {item.color}
                         </p>
                       )}
-                      <p className="mt-2 inline-block rounded border border-black/20 px-2 py-0.5 text-xs text-black/70">
+                      <p className="mt-2 inline-block rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs text-blue-700">
                         Qty: {item.qty}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         {item.mrp > item.price && (
-                          <span className="text-xs text-black/40 line-through">₹{item.mrp.toFixed(0)}</span>
+                          <>
+                            <span className="text-xs text-black/40 line-through">₹{item.mrp.toFixed(0)}</span>
+                            <span className="text-xs font-semibold text-green-600">
+                              {Math.round(((item.mrp - item.price) / item.mrp) * 100)}% off
+                            </span>
+                          </>
                         )}
                         <span className="text-sm font-semibold text-black">₹{item.price.toFixed(0)}</span>
                       </div>
@@ -360,8 +369,8 @@ export default function CheckoutForm({
             <div className="flex flex-col gap-5">
               <div className="rounded-lg border border-black/15 p-5">
                 <h2 className="mb-4 text-base font-semibold text-black">Payment Method</h2>
-                <label className="flex items-start gap-3 rounded border border-black bg-black/5 p-4">
-                  <input type="radio" checked readOnly className="mt-0.5 accent-black" />
+                <label className="flex items-start gap-3 rounded border border-blue-600 bg-blue-50 p-4">
+                  <input type="radio" checked readOnly className="mt-0.5 accent-blue-600" />
                   <span>
                     <span className="block text-sm font-semibold text-black">Cash on Delivery</span>
                     <span className="mt-0.5 block text-xs text-black/60">Pay in cash when your order is delivered.</span>
@@ -371,7 +380,7 @@ export default function CheckoutForm({
               </div>
 
               {submitError && (
-                <p className="rounded border border-black bg-black/5 p-3 text-sm font-medium text-black">
+                <p className="rounded border border-red-300 bg-red-50 p-3 text-sm font-medium text-red-700">
                   {submitError}
                 </p>
               )}
