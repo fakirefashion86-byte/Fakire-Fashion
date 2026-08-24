@@ -3,9 +3,10 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import AuthLayout from "@/components/AuthLayout";
+import GoldAuthLayout from "@/components/GoldAuthLayout";
 import PasswordInput from "@/components/PasswordInput";
-import { INPUT_CLASS, PRIMARY_BUTTON_CLASS } from "@/lib/formStyles";
+import { ArrowRightIcon } from "@/components/icons";
+import { GOLD_INPUT_CLASS, GOLD_LABEL_CLASS, GOLD_BUTTON_CLASS, GOLD_ICON_CLASS } from "@/lib/goldAuthStyles";
 
 function LoginForm() {
   const router = useRouter();
@@ -36,49 +37,82 @@ function LoginForm() {
   }
 
   return (
-    <AuthLayout title="Welcome Back" subtitle="Log in to your account">
+    <GoldAuthLayout
+      title={
+        <>
+          Welcome <span className="text-[#e3c17a]">Back</span>
+        </>
+      }
+      subtitle="Log in to your account"
+    >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="email"
-          required
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={INPUT_CLASS}
-        />
-        <PasswordInput
-          required
-          placeholder="Password"
-          value={password}
-          onChange={setPassword}
-          autoComplete="current-password"
-        />
-        <div className="-mt-2 flex items-center justify-between">
-          <label className="flex items-center gap-2 text-xs text-ink-secondary">
+        <div>
+          <label className={GOLD_LABEL_CLASS}>Email Address</label>
+          <input
+            type="email"
+            required
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={GOLD_INPUT_CLASS}
+          />
+        </div>
+
+        <div>
+          <label className={GOLD_LABEL_CLASS}>Password</label>
+          <PasswordInput
+            required
+            placeholder="••••••••"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            className={GOLD_INPUT_CLASS}
+            iconClassName={GOLD_ICON_CLASS}
+          />
+        </div>
+
+        <div className="-mt-1 flex flex-wrap items-center justify-between gap-2">
+          <label className="flex items-center gap-2 text-xs text-white/70">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-border"
+              className="h-4 w-4 rounded border-[#d4af6a]/50 bg-transparent"
+              style={{ accentColor: "#e3c17a" }}
             />
             Remember me
           </label>
-          <Link href="/forgot-password" className="text-xs text-accent hover:underline">
+          <Link href="/forgot-password" className="text-xs text-[#e3c17a] hover:underline">
             Forgot password?
           </Link>
         </div>
-        {error && <p className="text-sm text-error">{error}</p>}
-        <button type="submit" disabled={loading} className={PRIMARY_BUTTON_CLASS}>
+
+        {error && (
+          <div className="flex items-center gap-2 rounded-md border border-red-900/50 bg-red-950/40 px-4 py-3 text-sm text-red-300">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 flex-shrink-0" aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l6.518 11.6c.75 1.334-.213 2.987-1.743 2.987H3.482c-1.53 0-2.493-1.653-1.743-2.987l6.518-11.6zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-.25-6.25a.75.75 0 00-1.5 0v3.5a.75.75 0 001.5 0v-3.5z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {error}
+          </div>
+        )}
+
+        <button type="submit" disabled={loading} className={GOLD_BUTTON_CLASS}>
           {loading ? "Logging in…" : "Log in"}
+          {!loading && <ArrowRightIcon className="h-4 w-4" />}
         </button>
       </form>
-      <p className="mt-6 text-center text-sm text-ink-secondary">
+
+      <p className="mt-6 text-center text-sm text-white/60">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-medium text-accent hover:underline">
+        <Link href="/register" className="font-medium text-[#e3c17a] hover:underline">
           Sign up
         </Link>
       </p>
-    </AuthLayout>
+    </GoldAuthLayout>
   );
 }
 

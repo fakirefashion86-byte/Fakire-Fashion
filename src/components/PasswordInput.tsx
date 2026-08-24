@@ -12,6 +12,7 @@ export default function PasswordInput({
   minLength,
   className,
   autoComplete,
+  iconClassName,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -20,6 +21,7 @@ export default function PasswordInput({
   minLength?: number;
   className?: string;
   autoComplete?: string;
+  iconClassName?: string;
 }) {
   const [visible, setVisible] = useState(false);
 
@@ -39,7 +41,7 @@ export default function PasswordInput({
         type="button"
         onClick={() => setVisible((v) => !v)}
         aria-label={visible ? "Hide password" : "Show password"}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-foreground"
+        className={`absolute right-3 top-1/2 -translate-y-1/2 ${iconClassName ?? "text-ink-muted hover:text-foreground"}`}
         tabIndex={-1}
       >
         {visible ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
