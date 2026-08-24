@@ -45,7 +45,7 @@ function LoginForm() {
       }
       subtitle="Log in to your account"
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 sm:gap-4">
         <div>
           <label className={GOLD_LABEL_CLASS}>Email Address</label>
           <input
