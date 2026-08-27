@@ -4,6 +4,7 @@ import MeasurementsForm from "@/components/admin/MeasurementsForm";
 import BookingStatusActions from "@/components/admin/BookingStatusActions";
 import CopyCoordinatesButton from "@/components/CopyCoordinatesButton";
 import { buildDirectionsUrl } from "@/lib/directions";
+import { estimatedDeliveryDate } from "@/lib/delivery";
 
 type Order = {
   id: number;
@@ -16,6 +17,7 @@ type Order = {
   customerAddress: string;
   latitude: number | null;
   longitude: number | null;
+  createdAt: Date;
   preferredDate: Date;
   preferredTimeSlot: string;
   measurements: unknown;
@@ -59,6 +61,9 @@ export default function StitchOrderDetail({ order }: { order: Order }) {
           <p>
             Visit: {order.preferredDate.toDateString()} · {order.preferredTimeSlot}
           </p>
+          {order.status !== "delivered" && (
+            <p>Estimated delivery by {estimatedDeliveryDate(order.createdAt).toDateString()}</p>
+          )}
         </div>
         {directionsUrl && (
           <div className="mt-3 flex flex-wrap items-center gap-2">

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StitchOrderFeedbackComplaint from "@/components/StitchOrderFeedbackComplaint";
+import { estimatedDeliveryDate } from "@/lib/delivery";
 
 const BOOKING_LABELS: Record<string, string> = {
   requested: "Awaiting confirmation",
@@ -77,6 +78,11 @@ export default async function MyStitchOrdersPage() {
                 Visit: {order.preferredDate.toDateString()} · {order.preferredTimeSlot}
               </p>
               <p className="mt-1 text-sm text-ink-muted">Delivery to: {order.customerAddress}</p>
+              {order.status !== "delivered" && (
+                <p className="mt-1 text-sm text-ink-muted">
+                  Estimated delivery by {estimatedDeliveryDate(order.createdAt).toDateString()}
+                </p>
+              )}
 
               {order.status === "delivered" && (
                 <StitchOrderFeedbackComplaint

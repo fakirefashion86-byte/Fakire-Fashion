@@ -29,39 +29,50 @@ export default function StitchOrderFeedbackComplaint({
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const res = await fetch(`/api/stitch-orders/${orderId}/feedback`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rating, comment }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      setError("Could not submit feedback. Please try again.");
-      return;
+    try {
+      const res = await fetch(`/api/stitch-orders/${orderId}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rating, comment }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? "Could not submit feedback. Please try again.");
+        return;
+      }
+      setShowFeedbackForm(false);
+      router.refresh();
+    } catch {
+      setError("Could not submit feedback. Check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
-    setShowFeedbackForm(false);
-    router.refresh();
   }
 
   async function submitComplaint(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const res = await fetch(`/api/stitch-orders/${orderId}/complaints`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ subject, description }),
-    });
-    const data = await res.json().catch(() => ({}));
-    setLoading(false);
-    if (!res.ok) {
-      setError(data.error ?? "Could not submit your request. Please try again.");
-      return;
+    try {
+      const res = await fetch(`/api/stitch-orders/${orderId}/complaints`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, description }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? "Could not submit your request. Please try again.");
+        return;
+      }
+      setSubject("");
+      setDescription("");
+      setShowComplaintForm(false);
+      router.refresh();
+    } catch {
+      setError("Could not submit your request. Check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
-    setSubject("");
-    setDescription("");
-    setShowComplaintForm(false);
-    router.refresh();
   }
 
   return (
@@ -99,7 +110,7 @@ export default function StitchOrderFeedbackComplaint({
           />
           <div className="flex gap-2">
             <button type="submit" disabled={loading} className="rounded bg-btn px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50">
-              Submit Feedback
+              {loading ? "Submitting..." : "Submit Feedback"}
             </button>
             <button type="button" onClick={() => setShowFeedbackForm(false)} className="text-xs text-ink-muted hover:underline">
               Cancel
@@ -143,7 +154,7 @@ export default function StitchOrderFeedbackComplaint({
           />
           <div className="flex gap-2">
             <button type="submit" disabled={loading} className="rounded bg-btn px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50">
-              Submit Request
+              {loading ? "Submitting..." : "Submit Request"}
             </button>
             <button type="button" onClick={() => setShowComplaintForm(false)} className="text-xs text-ink-muted hover:underline">
               Cancel
