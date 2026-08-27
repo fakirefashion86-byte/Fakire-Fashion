@@ -99,15 +99,6 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* AdsBender publisher ad zone - homepage banner, verified via
-          public/ads.txt. See AdsBender Publisher Portal > fakirefashion.com. */}
-      <section className="mx-auto flex max-w-6xl justify-center px-4 py-6">
-        <section
-          data-zone-id="d9181176-1cbe-480e-a145-130b63d4dd56"
-          style={{ width: 300, height: 250 }}
-        />
-      </section>
-
       {/* Feature strip */}
       <section className="border-y border-border bg-section">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:grid-cols-4">

@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AdZone from "@/components/AdZone";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,10 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col overflow-x-hidden">
         <Script src="https://adsbender.onrender.com/assets/publisher_tag.js" strategy="afterInteractive" />
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          {children}
+          <AdZone />
+        </main>
         <Footer />
       </body>
     </html>

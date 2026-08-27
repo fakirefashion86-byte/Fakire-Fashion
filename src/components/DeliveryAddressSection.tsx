@@ -83,6 +83,11 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
         const addresses: SavedAddress[] = data.addresses ?? [];
         setSaved(addresses);
         setMode(addresses.length > 0 ? "saved" : MAPS_CONFIGURED ? "picking" : "editing");
+        // Addresses come back default-first (see /api/addresses ordering), so
+        // the top card is the one the customer expects to already be in
+        // effect — pre-select it instead of leaving the form looking filled
+        // in but actually unselected until they click it.
+        if (addresses.length > 0) selectSaved(addresses[0]);
         if (addresses.length === 0 && !MAPS_CONFIGURED) startManual();
       })
       .catch(() => {

@@ -18,14 +18,15 @@ function urlBase64ToUint8Array(base64String: string) {
 
 type Status = "unsupported" | "unconfigured" | "loading" | "off" | "on" | "denied";
 
-// Synchronous capability check, safe to run during render (no DOM/async
-// work) — separated out so the effect below only handles the async half.
+// Capability check. Must return the same thing on the server and on the
+// client's first render (React hydration compares them), so it can't read
+// browser-only state like `Notification.permission` here — that's resolved
+// in the effect below instead, after mount.
 function initialStatus(): Status {
   if (!VAPID_PUBLIC_KEY) return "unconfigured";
   if (typeof window === "undefined" || !("serviceWorker" in navigator) || !("PushManager" in window)) {
     return "unsupported";
   }
-  if (Notification.permission === "denied") return "denied";
   return "loading";
 }
 
@@ -34,6 +35,11 @@ export default function PushOptIn({ dark = false }: { dark?: boolean }) {
 
   useEffect(() => {
     if (status !== "loading") return;
+
+    if (Notification.permission === "denied") {
+      setStatus("denied");
+      return;
+    }
 
     navigator.serviceWorker
       .register("/sw.js")
