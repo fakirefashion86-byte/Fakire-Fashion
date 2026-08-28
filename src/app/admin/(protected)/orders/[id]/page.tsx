@@ -45,6 +45,9 @@ export default async function AdminOrderDetailPage({ params }: Props) {
         </div>
         <div className="flex items-center gap-3">
           <OrderStatusSelect orderId={order.id} status={order.status} />
+          <Link href={`/orders/${order.id}/invoice`} className="text-sm text-accent hover:underline">
+            View Invoice
+          </Link>
           <Link href="/admin/orders" className="text-sm text-accent hover:underline">
             ← All Orders
           </Link>

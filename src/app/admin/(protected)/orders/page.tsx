@@ -39,9 +39,12 @@ export default async function AdminOrdersPage() {
               <td className="py-2">
                 <OrderStatusSelect orderId={o.id} status={o.status} />
               </td>
-              <td className="py-2">
+              <td className="py-2 whitespace-nowrap">
                 <Link href={`/admin/orders/${o.id}`} className="text-accent hover:underline">
                   View
+                </Link>{" "}
+                <Link href={`/orders/${o.id}/invoice`} className="text-accent hover:underline">
+                  Invoice
                 </Link>
               </td>
             </tr>
