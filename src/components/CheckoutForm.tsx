@@ -7,6 +7,7 @@ import DeliveryAddressSection, {
   EMPTY_DELIVERY_ADDRESS,
   type DeliveryAddressValue,
 } from "@/components/DeliveryAddressSection";
+import { ShieldIcon, LockIcon, ArrowRightIcon } from "@/components/icons";
 
 type ContactValues = {
   name: string;
@@ -35,15 +36,15 @@ const MOBILE_RE = /^[6-9]\d{9}$/;
 const PINCODE_RE = /^\d{6}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Blue accent for actions/progress, green for savings, amber/red for
+// Indigo accent for actions/progress, green for savings, amber/red for
 // warnings. DeliveryAddressSection keeps its own theme colors — it's
 // shared with the tailor-booking wizard.
 const FIELD_CLASS =
-  "w-full rounded border border-black/20 px-3 py-2.5 text-sm text-black outline-none transition placeholder:text-black/40 focus:border-blue-600 focus:ring-1 focus:ring-blue-600";
+  "w-full rounded-lg border border-black/15 px-3 py-3 text-sm text-black outline-none transition placeholder:text-black/40 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500";
 const PRIMARY_BTN =
-  "rounded bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40";
+  "rounded-lg bg-gradient-to-r from-[#C7A03D] to-[#B8860B] px-4 py-3 text-sm font-semibold text-[#2b2116] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40";
 const OUTLINE_BTN =
-  "rounded border border-blue-600 px-4 py-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white";
+  "rounded-lg border border-indigo-500 px-4 py-3 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-500 hover:text-white";
 
 function validate(contact: ContactValues, delivery: DeliveryAddressValue): Errors {
   const errors: Errors = {};
@@ -72,34 +73,63 @@ const STEPS: { n: 1 | 2 | 3; label: string }[] = [
 
 function Stepper({ step }: { step: 1 | 2 | 3 }) {
   return (
-    <div className="mb-8 flex items-center justify-center">
+    <div className="mb-6 flex items-center justify-center rounded-xl border border-black/10 bg-white py-6">
       {STEPS.map((s, i) => (
         <div key={s.n} className="flex items-center">
           <div className="flex flex-col items-center gap-1.5">
             <span
-              className={`flex h-8 w-8 items-center justify-center rounded-full border text-sm font-semibold ${
+              className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold ${
                 s.n < step
-                  ? "border-green-600 bg-green-600 text-white"
+                  ? "bg-green-600 text-white"
                   : s.n === step
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-black/25 bg-white text-black/40"
+                    ? "bg-indigo-600 text-white"
+                    : "border border-black/20 bg-white text-black/40"
               }`}
             >
               {s.n < step ? "✓" : s.n}
             </span>
             <span
               className={`text-xs ${
-                s.n === step ? "font-semibold text-blue-600" : s.n < step ? "text-green-600" : "text-black/40"
+                s.n === step ? "font-semibold text-indigo-600" : s.n < step ? "text-green-600" : "text-black/40"
               }`}
             >
               {s.label}
             </span>
           </div>
           {i < STEPS.length - 1 && (
-            <span className={`mx-2 mb-5 h-px w-10 sm:w-20 ${s.n < step ? "bg-green-600" : "bg-black/15"}`} />
+            <span className={`mx-2 mb-5 h-px w-10 sm:w-24 ${s.n < step ? "bg-indigo-500" : "bg-black/15"}`} />
           )}
         </div>
       ))}
+    </div>
+  );
+}
+
+function InfoBanner() {
+  return (
+    <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-indigo-50 p-5">
+      <div className="flex items-center gap-3">
+        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 text-white">
+          <ShieldIcon className="h-5 w-5" />
+        </span>
+        <div>
+          <p className="text-sm font-semibold text-black">Your information is safe with us</p>
+          <p className="text-xs text-black/60">Your order will be placed as Cash on Delivery for now.</p>
+        </div>
+      </div>
+      <span className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 sm:flex">
+        <LockIcon className="h-5 w-5" />
+      </span>
+    </div>
+  );
+}
+
+function StepFooter({ step }: { step: 1 | 2 | 3 }) {
+  return (
+    <div className="mt-4 flex items-center justify-center gap-3 text-xs text-black/40">
+      <span className="h-px w-10 bg-black/15" />
+      <span>Step {step} of 3</span>
+      <span className="h-px w-10 bg-black/15" />
     </div>
   );
 }
@@ -137,7 +167,7 @@ function PriceDetails({
         )}
         <div className="flex justify-between border-t border-black/15 pt-3 text-base font-semibold text-black">
           <span>Total Amount</span>
-          <span className="text-blue-700">₹{total.toFixed(0)}</span>
+          <span className="text-indigo-700">₹{total.toFixed(0)}</span>
         </div>
       </div>
       {discount > 0 && (
@@ -261,6 +291,8 @@ export default function CheckoutForm({
     <div>
       <Stepper step={step} />
 
+      {step === 1 && <InfoBanner />}
+
       <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
         <div>
           {step === 1 && (
@@ -287,8 +319,8 @@ export default function CheckoutForm({
 
               <DeliveryAddressSection value={delivery} onChange={setDelivery} errors={errors} />
 
-              <button type="submit" className={PRIMARY_BTN}>
-                Continue to Order Summary
+              <button type="submit" className={`flex items-center justify-center gap-2 ${PRIMARY_BTN}`}>
+                Continue <ArrowRightIcon className="h-4 w-4" />
               </button>
             </form>
           )}
@@ -307,7 +339,7 @@ export default function CheckoutForm({
                     </p>
                     <p className="text-sm text-black/70">{contact.mobile}</p>
                   </div>
-                  <button type="button" onClick={() => setStep(1)} className="shrink-0 rounded border border-blue-600 px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
+                  <button type="button" onClick={() => setStep(1)} className="shrink-0 rounded border border-indigo-500 px-3 py-1.5 text-xs font-semibold text-indigo-600 transition hover:bg-indigo-500 hover:text-white">
                     Change
                   </button>
                 </div>
@@ -340,7 +372,7 @@ export default function CheckoutForm({
                           {item.color}
                         </p>
                       )}
-                      <p className="mt-2 inline-block rounded border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs text-blue-700">
+                      <p className="mt-2 inline-block rounded border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs text-indigo-700">
                         Qty: {item.qty}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
@@ -369,8 +401,8 @@ export default function CheckoutForm({
             <div className="flex flex-col gap-5">
               <div className="rounded-lg border border-black/15 p-5">
                 <h2 className="mb-4 text-base font-semibold text-black">Payment Method</h2>
-                <label className="flex items-start gap-3 rounded border border-blue-600 bg-blue-50 p-4">
-                  <input type="radio" checked readOnly className="mt-0.5 accent-blue-600" />
+                <label className="flex items-start gap-3 rounded border border-indigo-500 bg-indigo-50 p-4">
+                  <input type="radio" checked readOnly className="mt-0.5 accent-indigo-600" />
                   <span>
                     <span className="block text-sm font-semibold text-black">Cash on Delivery</span>
                     <span className="mt-0.5 block text-xs text-black/60">Pay in cash when your order is delivered.</span>
@@ -399,6 +431,8 @@ export default function CheckoutForm({
 
         <PriceDetails mrpTotal={mrpTotal} shippingCharge={shippingCharge} discount={discount} total={total} />
       </div>
+
+      <StepFooter step={step} />
     </div>
   );
 }

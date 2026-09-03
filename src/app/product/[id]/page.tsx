@@ -47,7 +47,7 @@ export default async function ProductPage({ params }: Props) {
   const savings = mrp > price ? mrp - price : 0;
 
   return (
-    <div className="bg-[#FBF3E6] pb-24">
+    <div className="bg-white pb-24">
       <div className="mx-auto max-w-6xl px-4 pb-10 pt-6 sm:pt-10">
         <div className="grid gap-10 sm:grid-cols-2">
           <ProductGallery images={product.images.map((i) => i.url)} productName={product.name} />

@@ -49,25 +49,22 @@ export default async function CheckoutPage() {
   const total = subtotal + shippingCharge;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <h1 className="mb-2 text-2xl font-semibold text-black">Checkout</h1>
-      <p className="mb-6 text-sm text-black/60">
-        Payment gateways aren&apos;t enabled yet — every order is placed as Cash on Delivery for now.
-      </p>
-
-      <CheckoutForm
-        defaultValues={{
-          name: user?.name ?? "",
-          email: user?.email ?? "",
-          mobile: user?.mobile ?? "",
-        }}
-        canSubmit={unavailable.length === 0}
-        summaryItems={summaryItems}
-        mrpTotal={mrpTotal}
-        shippingCharge={shippingCharge}
-        discount={discount}
-        total={total}
-      />
+    <div className="bg-white">
+      <div className="mx-auto max-w-5xl px-4 py-8">
+        <CheckoutForm
+          defaultValues={{
+            name: user?.name ?? "",
+            email: user?.email ?? "",
+            mobile: user?.mobile ?? "",
+          }}
+          canSubmit={unavailable.length === 0}
+          summaryItems={summaryItems}
+          mrpTotal={mrpTotal}
+          shippingCharge={shippingCharge}
+          discount={discount}
+          total={total}
+        />
+      </div>
     </div>
   );
 }

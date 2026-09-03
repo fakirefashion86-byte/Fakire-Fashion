@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { INPUT_CLASS } from "@/lib/formStyles";
 import { MAPS_CONFIGURED } from "@/lib/mapsConfig";
 import type { ConfirmedLocation } from "@/components/location/LocationPicker";
+import { HomeIcon, BuildingIcon, PinIcon, PlusIcon } from "@/components/icons";
 
 // The Maps JS SDK + Places library are only fetched once this section actually
 // mounts the picker (and only client-side) — checkout's initial load, and every
@@ -57,7 +58,11 @@ type SavedAddress = Omit<DeliveryAddressValue, "locationConfirmed" | "locationSo
   label: string;
 };
 
-const LABEL_ICON: Record<string, string> = { Home: "🏠", Work: "🏢" };
+const LABEL_ICON: Record<string, typeof HomeIcon> = { Home: HomeIcon, Work: BuildingIcon };
+const LABEL_BADGE: Record<string, string> = {
+  Home: "bg-green-50 text-green-600",
+  Work: "bg-indigo-50 text-indigo-600",
+};
 
 type Props = {
   value: DeliveryAddressValue;
@@ -188,41 +193,61 @@ export default function DeliveryAddressSection({ value, onChange, errors }: Prop
 
   return (
     <div>
-      <h2 className="mb-3 text-lg font-semibold">Delivery Address</h2>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Delivery Address</h2>
+        {mode === "saved" && saved && saved.length > 0 && (
+          <button
+            type="button"
+            onClick={startPicking}
+            className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
+          >
+            <PlusIcon className="h-4 w-4" /> Add New Address
+          </button>
+        )}
+      </div>
 
       {mode === "saved" && saved && saved.length > 0 && (
         <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-2">
-            {saved.map((addr) => (
+          {saved.map((addr) => {
+            const Icon = LABEL_ICON[addr.label] ?? PinIcon;
+            const selected = selectedId === addr.id;
+            return (
               <button
                 key={addr.id}
                 type="button"
                 onClick={() => selectSaved(addr)}
-                className={`rounded border p-3 text-left text-sm transition ${
-                  selectedId === addr.id
-                    ? "border-black bg-black/5"
-                    : "border-border hover:border-black"
+                className={`flex items-start gap-3 rounded-xl border p-4 text-left text-sm transition ${
+                  selected
+                    ? "border-indigo-500 bg-indigo-50/60"
+                    : "border-black/10 hover:border-indigo-300"
                 }`}
               >
-                <p className="font-medium">
-                  {LABEL_ICON[addr.label] ?? "📍"} {addr.label}
-                </p>
-                <p className="text-ink-secondary">
-                  {[addr.houseNumber, addr.addressLine].filter(Boolean).join(", ")}
-                </p>
-                <p className="text-ink-muted">
-                  {[addr.area, addr.city, addr.state].filter(Boolean).join(", ")} {addr.pincode}
-                </p>
+                <span
+                  className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
+                    LABEL_BADGE[addr.label] ?? "bg-black/5 text-black/60"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="flex-1">
+                  <span className="block font-semibold text-black">{addr.label}</span>
+                  <span className="block text-black/70">
+                    {[addr.houseNumber, addr.addressLine].filter(Boolean).join(", ")}
+                  </span>
+                  <span className="block text-black/50">
+                    {[addr.area, addr.city, addr.state].filter(Boolean).join(", ")} {addr.pincode}
+                  </span>
+                </span>
+                <span
+                  className={`mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
+                    selected ? "border-indigo-600" : "border-black/20"
+                  }`}
+                >
+                  {selected && <span className="h-2.5 w-2.5 rounded-full bg-indigo-600" />}
+                </span>
               </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={startPicking}
-            className="self-start text-sm font-medium text-black hover:underline"
-          >
-            + Add New Address
-          </button>
+            );
+          })}
         </div>
       )}
 

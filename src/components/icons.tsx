@@ -377,6 +377,66 @@ export function RefreshIcon({ className }: IconProps) {
   );
 }
 
+export function HomeIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className}>
+      <path d="M4 11l8-7 8 7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 10v9h12v-9" strokeLinejoin="round" />
+      <path d="M10 19v-5h4v5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function BuildingIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className}>
+      <rect x="5" y="3.5" width="14" height="17" rx="1" />
+      <path d="M8.5 7h1.5M14 7h1.5M8.5 10.5h1.5M14 10.5h1.5M8.5 14h1.5M14 14h1.5" strokeLinecap="round" />
+      <path d="M10 20.5V17h4v3.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function PinIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className}>
+      <path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0112 3.5a6.5 6.5 0 016.5 6.5c0 5.4-6.5 11-6.5 11z" strokeLinejoin="round" />
+      <circle cx="12" cy="10" r="2.2" />
+    </svg>
+  );
+}
+
+export function PlusIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+      <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function LockIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className}>
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+      <path d="M8 10.5V7a4 4 0 018 0v3.5" strokeLinecap="round" />
+      <circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function TagIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className}>
+      <path
+        d="M11.5 3.5H5a1.5 1.5 0 00-1.5 1.5v6.5a1.5 1.5 0 00.44 1.06l8 8a1.5 1.5 0 002.12 0l6.5-6.5a1.5 1.5 0 000-2.12l-8-8a1.5 1.5 0 00-1.06-.44z"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+      <circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function MedalIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className={className}>
