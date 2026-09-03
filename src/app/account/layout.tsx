@@ -12,6 +12,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
     { href: "/orders", label: "My Orders" },
     { href: "/stitching/my-orders", label: "Stitching Orders" },
     { href: "/account/wishlist", label: "Wishlist" },
+    { href: "/account/notifications", label: "Notifications" },
   ];
 
   return (

@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 import NotificationBell from "@/components/NotificationBell";
 import PushOptIn from "@/components/PushOptIn";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -10,13 +11,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-full bg-white">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
-        <div className="mb-6 flex items-center justify-end gap-4">
-          <NotificationBell endpoint="/api/admin/notifications" />
-          <PushOptIn />
-          <LogoutButton />
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:flex sm:gap-8 sm:py-10">
+        <AdminSidebar />
+        <div className="min-w-0 flex-1">
+          <div className="mb-6 flex items-center justify-end gap-4">
+            <NotificationBell endpoint="/api/admin/notifications" />
+            <PushOptIn />
+            <LogoutButton />
+          </div>
+          <div className="min-w-0 overflow-x-auto">{children}</div>
         </div>
-        <div className="min-w-0 overflow-x-auto">{children}</div>
       </div>
     </div>
   );
