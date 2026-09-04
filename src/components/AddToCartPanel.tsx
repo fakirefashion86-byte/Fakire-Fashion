@@ -57,40 +57,48 @@ export default function AddToCartPanel({ productId, variants, loggedIn }: Props)
       return false;
     }
     setError(null);
-    const res = await fetch("/api/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        productId,
-        variantId: selectedVariant?.id,
-        qty,
-      }),
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Could not add to cart. Please try again.");
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId,
+          variantId: selectedVariant?.id,
+          qty,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? "Could not add to cart. Please try again.");
+        return false;
+      }
+      return true;
+    } catch {
+      setError("Network error. Please check your connection and try again.");
       return false;
     }
-    return true;
   }
 
   async function handleAddToCart() {
     if (pending) return;
     setPending("cart");
-    const ok = await addToCart();
-    setPending(null);
-    if (ok) {
-      setAdded(true);
-      router.refresh();
+    try {
+      const ok = await addToCart();
+      if (ok) setAdded(true);
+    } finally {
+      setPending(null);
     }
   }
 
   async function handleBuyNow() {
     if (pending) return;
     setPending("buy");
-    const ok = await addToCart();
-    setPending(null);
-    if (ok) router.push("/cart");
+    try {
+      const ok = await addToCart();
+      if (ok) router.push("/cart");
+    } finally {
+      setPending(null);
+    }
   }
 
   return (
@@ -173,7 +181,10 @@ export default function AddToCartPanel({ productId, variants, loggedIn }: Props)
           <button
             type="button"
             aria-label="Decrease quantity"
-            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            onClick={() => {
+              setQty((q) => Math.max(1, q - 1));
+              setAdded(false);
+            }}
             className="px-3 py-1.5 text-[#6b5a35] hover:text-[#2b2116]"
           >
             −
@@ -182,7 +193,10 @@ export default function AddToCartPanel({ productId, variants, loggedIn }: Props)
           <button
             type="button"
             aria-label="Increase quantity"
-            onClick={() => setQty((q) => (maxQty ? Math.min(maxQty, q + 1) : q + 1))}
+            onClick={() => {
+              setQty((q) => (maxQty ? Math.min(maxQty, q + 1) : q + 1));
+              setAdded(false);
+            }}
             className="px-3 py-1.5 text-[#6b5a35] hover:text-[#2b2116]"
           >
             +

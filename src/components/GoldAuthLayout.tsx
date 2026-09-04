@@ -16,7 +16,7 @@ export default function GoldAuthLayout({
 }) {
   return (
     <div
-      className="relative flex items-center justify-center overflow-hidden px-4 py-8 sm:py-16"
+      className="relative flex items-center justify-center overflow-hidden px-7 py-8 sm:px-4 sm:py-16"
       style={{ minHeight: `calc(100dvh - ${HEADER_H})` }}
     >
       <Image

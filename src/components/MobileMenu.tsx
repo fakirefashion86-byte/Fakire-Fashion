@@ -94,6 +94,14 @@ export default function MobileMenu({
                   </span>
                 )}
               </Link>
+              {isLoggedIn && (
+                <Link
+                  href={isAdmin ? "/admin/notifications" : isStaff ? "/tailor/notifications" : "/account/notifications"}
+                  onClick={() => setOpen(false)}
+                >
+                  Notifications
+                </Link>
+              )}
               <div className="my-2 border-t border-border" />
               {isLoggedIn ? (
                 <>
