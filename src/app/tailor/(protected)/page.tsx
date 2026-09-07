@@ -4,6 +4,7 @@ import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
 import VisitToggle from "@/components/admin/VisitToggle";
 import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
 import { buildDirectionsUrl } from "@/lib/directions";
+import { garmentLabel, formatSerialNumber } from "@/lib/garment";
 import type { StitchStatus } from "@prisma/client";
 
 const STATUS_LABELS: Record<StitchStatus, string> = {
@@ -79,7 +80,8 @@ export default async function TailorStitchOrdersPage({ searchParams }: Props) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-medium text-foreground">{o.customerName}</p>
-                <p className="text-sm text-ink-muted">{o.stitchCategory.name}</p>
+                <p className="text-sm text-ink-muted">{garmentLabel(o)}</p>
+                <p className="font-mono text-xs text-ink-muted">{formatSerialNumber(o.serialNumber)}</p>
               </div>
               <StitchStatusSelect orderId={o.id} status={o.status} />
             </div>
@@ -145,6 +147,7 @@ export default async function TailorStitchOrdersPage({ searchParams }: Props) {
           <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b border-border text-left text-ink-muted">
+                <th className="py-2">Serial #</th>
                 <th className="py-2">Customer</th>
                 <th className="py-2">Garment</th>
                 <th className="py-2">Contact</th>
@@ -158,8 +161,9 @@ export default async function TailorStitchOrdersPage({ searchParams }: Props) {
             <tbody>
               {orders.map((o) => (
                 <tr key={o.id} className="border-b border-divider align-top">
+                  <td className="py-2 font-mono text-xs text-ink-muted">{formatSerialNumber(o.serialNumber)}</td>
                   <td className="py-2">{o.customerName}</td>
-                  <td className="py-2">{o.stitchCategory.name}</td>
+                  <td className="py-2">{garmentLabel(o)}</td>
                   <td className="py-2 text-ink-muted">
                     {o.customerEmail}
                     <br />

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import ComplaintStatusSelect from "@/components/admin/ComplaintStatusSelect";
+import { garmentLabel } from "@/lib/garment";
 
 export default async function AdminComplaintsPage() {
   const complaints = await prisma.complaint.findMany({
@@ -19,7 +20,7 @@ export default async function AdminComplaintsPage() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="font-medium">
-                    {c.subject} — {c.stitchOrder.customerName} · {c.stitchOrder.stitchCategory.name} (Order #{c.stitchOrderId})
+                    {c.subject} — {c.stitchOrder.customerName} · {garmentLabel(c.stitchOrder)} (Order #{c.stitchOrderId})
                   </p>
                   <p className="text-xs text-ink-muted">{c.createdAt.toLocaleString()}</p>
                 </div>

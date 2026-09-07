@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { garmentLabel, formatSerialNumber } from "@/lib/garment";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -63,6 +64,7 @@ export default async function AdminCustomerDetailPage({ params }: Props) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-ink-muted">
+              <th className="py-2">Serial #</th>
               <th className="py-2">Garment</th>
               <th className="py-2">Status</th>
               <th className="py-2">Date</th>
@@ -71,7 +73,8 @@ export default async function AdminCustomerDetailPage({ params }: Props) {
           <tbody>
             {customer.stitchOrders.map((o) => (
               <tr key={o.id} className="border-b border-divider">
-                <td className="py-2">{o.stitchCategory.name}</td>
+                <td className="py-2 font-mono text-xs text-ink-muted">{formatSerialNumber(o.serialNumber)}</td>
+                <td className="py-2">{garmentLabel(o)}</td>
                 <td className="py-2 capitalize">{o.status.replace(/_/g, " ")}</td>
                 <td className="py-2 text-ink-muted">{o.createdAt.toDateString()}</td>
               </tr>

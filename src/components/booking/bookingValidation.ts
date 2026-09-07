@@ -30,14 +30,19 @@ const MOBILE_RE = /^[6-9]\d{9}$/;
 // highlighted right where it is on submit — instead of the old behaviour
 // of silently disabling the button with no indication of what's missing.
 export function validateBooking(
-  stitchCategoryId: number | "",
+  stitchCategoryId: number | "" | "custom",
+  customGarmentName: string,
   preferredDate: string,
   preferredTimeSlot: string,
   customer: CustomerValues,
   delivery: DeliveryAddressValue
 ): BookingFieldErrors {
   const errors: BookingFieldErrors = {};
-  if (stitchCategoryId === "") errors.garment = "Please select a garment type";
+  if (stitchCategoryId === "") {
+    errors.garment = "Please select a garment type";
+  } else if (stitchCategoryId === "custom" && !customGarmentName.trim()) {
+    errors.garment = "Please type the garment you want stitched";
+  }
   if (!preferredDate) errors.date = "Please select a preferred date";
   if (!preferredTimeSlot) errors.timeSlot = "Please select a time slot";
   if (!customer.customerName.trim()) errors.customerName = "Full name is required";

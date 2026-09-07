@@ -10,6 +10,7 @@ const links = [
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/stitch-orders", label: "Stitch Orders" },
   { href: "/admin/feedback", label: "Feedback" },
+  { href: "/admin/product-reviews", label: "Product Reviews" },
   { href: "/admin/complaints", label: "Complaints" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/tailors", label: "Tailors" },

@@ -4,6 +4,7 @@ import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
 import VisitToggle from "@/components/admin/VisitToggle";
 import BookingStatusActions from "@/components/admin/BookingStatusActions";
 import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
+import { garmentLabel, formatSerialNumber } from "@/lib/garment";
 import type { StitchStatus } from "@prisma/client";
 
 const STATUS_LABELS: Record<StitchStatus, string> = {
@@ -57,6 +58,7 @@ export default async function AdminStitchOrdersPage({ searchParams }: Props) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border text-left text-ink-muted">
+            <th className="py-2">Serial #</th>
             <th className="py-2">Customer</th>
             <th className="py-2">Garment</th>
             <th className="py-2">Contact</th>
@@ -70,8 +72,9 @@ export default async function AdminStitchOrdersPage({ searchParams }: Props) {
         <tbody>
           {orders.map((o) => (
             <tr key={o.id} className="border-b border-divider">
+              <td className="py-2 font-mono text-xs text-ink-muted">{formatSerialNumber(o.serialNumber)}</td>
               <td className="py-2">{o.customerName}</td>
-              <td className="py-2">{o.stitchCategory.name}</td>
+              <td className="py-2">{garmentLabel(o)}</td>
               <td className="py-2 text-ink-muted">
                 {o.customerEmail} · {o.customerMobile}
               </td>

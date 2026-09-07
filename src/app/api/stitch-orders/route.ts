@@ -9,25 +9,33 @@ import { notifyAdmins, notifyUser } from "@/lib/notifications";
 // server-side too, not just as a UI nicety, since this is a hard business rule.
 const SERVICE_CITY = "lucknow";
 
-const createSchema = z.object({
-  stitchCategoryId: z.number().int(),
-  measurements: measurementsSchema,
-  customerName: z.string().min(1),
-  customerEmail: z.string().email(),
-  customerMobile: z.string().min(1),
-  addressLine: z.string().trim().min(1, "Address is required"),
-  houseNumber: z.string().trim().optional().default(""),
-  area: z.string().trim().optional().default(""),
-  landmark: z.string().trim().optional().default(""),
-  city: z.string().trim().min(1, "City is required"),
-  state: z.string().trim().min(1, "State is required"),
-  pincode: z.string().trim().min(1, "Pincode is required"),
-  country: z.string().trim().min(1).default("India"),
-  latitude: z.number().min(-90).max(90).nullable().optional(),
-  longitude: z.number().min(-180).max(180).nullable().optional(),
-  preferredDate: z.string().min(1),
-  preferredTimeSlot: z.string().min(1),
-});
+const createSchema = z
+  .object({
+    // Exactly one of these identifies the garment: a listed category, or a
+    // customer-typed name when nothing in the dropdown matched.
+    stitchCategoryId: z.number().int().optional(),
+    customGarmentName: z.string().trim().max(120).optional(),
+    measurements: measurementsSchema,
+    customerName: z.string().min(1),
+    customerEmail: z.string().email(),
+    customerMobile: z.string().min(1),
+    addressLine: z.string().trim().min(1, "Address is required"),
+    houseNumber: z.string().trim().optional().default(""),
+    area: z.string().trim().optional().default(""),
+    landmark: z.string().trim().optional().default(""),
+    city: z.string().trim().min(1, "City is required"),
+    state: z.string().trim().min(1, "State is required"),
+    pincode: z.string().trim().min(1, "Pincode is required"),
+    country: z.string().trim().min(1).default("India"),
+    latitude: z.number().min(-90).max(90).nullable().optional(),
+    longitude: z.number().min(-180).max(180).nullable().optional(),
+    preferredDate: z.string().min(1),
+    preferredTimeSlot: z.string().min(1),
+  })
+  .refine((data) => data.stitchCategoryId != null || Boolean(data.customGarmentName), {
+    message: "Please select a garment type or type one in",
+    path: ["stitchCategoryId"],
+  });
 
 export async function GET() {
   const session = await getSession();
@@ -59,10 +67,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const category = await prisma.stitchCategory.findUnique({
-    where: { id: parsed.data.stitchCategoryId },
-  });
-  if (!category) return NextResponse.json({ error: "Invalid stitching category" }, { status: 400 });
+  if (parsed.data.stitchCategoryId != null) {
+    const category = await prisma.stitchCategory.findUnique({
+      where: { id: parsed.data.stitchCategoryId },
+    });
+    if (!category) return NextResponse.json({ error: "Invalid stitching category" }, { status: 400 });
+  }
 
   // Carry forward the customer's most recent saved measurements so the tailor isn't starting
   // from a blank form — they can still edit/overwrite them for this order.
@@ -92,7 +102,8 @@ export async function POST(req: NextRequest) {
   const order = await prisma.stitchOrder.create({
     data: {
       userId: session.userId,
-      stitchCategoryId: parsed.data.stitchCategoryId,
+      stitchCategoryId: parsed.data.stitchCategoryId ?? null,
+      customGarmentName: parsed.data.stitchCategoryId == null ? parsed.data.customGarmentName || null : null,
       measurements: measurements ?? {},
       customerName: parsed.data.customerName,
       customerEmail: parsed.data.customerEmail,

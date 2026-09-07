@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import ProductGallery from "@/components/ProductGallery";
 import AddToCartPanel from "@/components/AddToCartPanel";
 import StickyAddToCart from "@/components/StickyAddToCart";
+import ProductReviewForm from "@/components/ProductReviewForm";
 import {
   StarIcon,
   HeartIcon,
@@ -28,7 +29,7 @@ export default async function ProductPage({ params }: Props) {
   const productId = Number(id);
   if (!Number.isInteger(productId)) notFound();
 
-  const [product, session] = await Promise.all([
+  const [product, session, reviews] = await Promise.all([
     prisma.product.findUnique({
       where: { id: productId },
       include: {
@@ -37,6 +38,11 @@ export default async function ProductPage({ params }: Props) {
       },
     }),
     getSession(),
+    prisma.productReview.findMany({
+      where: { productId, status: "approved" },
+      orderBy: { createdAt: "desc" },
+      include: { user: { select: { name: true } } },
+    }),
   ]);
 
   if (!product || !product.status) notFound();
@@ -45,6 +51,8 @@ export default async function ProductPage({ params }: Props) {
   const mrp = Number(product.mrp);
   const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
   const savings = mrp > price ? mrp - price : 0;
+
+  const avgRating = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
 
   return (
     <div className="bg-white pb-24">
@@ -71,11 +79,15 @@ export default async function ProductPage({ params }: Props) {
               {Array.from({ length: 5 }).map((_, i) => (
                 <StarIcon
                   key={i}
-                  filled={i < 4}
-                  className={`h-4 w-4 ${i < 4 ? "text-[#C7A03D]" : "text-[#E3D3AC]"}`}
+                  filled={i < Math.round(avgRating ?? 4.2)}
+                  className={`h-4 w-4 ${i < Math.round(avgRating ?? 4.2) ? "text-[#C7A03D]" : "text-[#E3D3AC]"}`}
                 />
               ))}
-              <span className="ml-1 text-sm text-[#6b5a35]">4.2 (250+ Happy Clients)</span>
+              <span className="ml-1 text-sm text-[#6b5a35]">
+                {avgRating != null
+                  ? `${avgRating.toFixed(1)} (${reviews.length} review${reviews.length === 1 ? "" : "s"})`
+                  : "4.2 (250+ Happy Clients)"}
+              </span>
             </div>
 
             <div className="mt-4 flex flex-wrap items-baseline gap-2">
@@ -141,6 +153,32 @@ export default async function ProductPage({ params }: Props) {
           >
             WhatsApp Us
           </a>
+        </div>
+
+        <div className="mx-auto mt-12 max-w-2xl">
+          <h2 className="font-serif text-xl font-semibold text-[#2b2116]">Customer Reviews</h2>
+          <div className="mt-4">
+            <ProductReviewForm productId={product.id} loggedIn={Boolean(session)} />
+          </div>
+          {reviews.length === 0 ? (
+            <p className="mt-4 text-sm text-[#8a6d2f]">No reviews yet — be the first to share your experience.</p>
+          ) : (
+            <div className="mt-6 flex flex-col gap-4">
+              {reviews.map((r) => (
+                <div key={r.id} className="rounded-lg border border-[#EAD9B8] p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-[#2b2116]">{r.user.name}</p>
+                    <p className="text-sm text-[#C7A03D]">
+                      {"★".repeat(r.rating)}
+                      {"☆".repeat(5 - r.rating)}
+                    </p>
+                  </div>
+                  {r.comment && <p className="mt-1.5 text-sm text-[#5c4d38]">{r.comment}</p>}
+                  <p className="mt-1.5 text-xs text-[#a5987c]">{r.createdAt.toDateString()}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

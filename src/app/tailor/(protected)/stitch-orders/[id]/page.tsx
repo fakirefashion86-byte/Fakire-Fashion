@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import StitchOrderDetail from "@/components/admin/StitchOrderDetail";
 import DeleteOrderButton from "@/components/admin/DeleteOrderButton";
+import { formatSerialNumber } from "@/lib/garment";
 
 export default async function TailorStitchOrderDetailPage({
   params,
@@ -22,7 +23,9 @@ export default async function TailorStitchOrderDetailPage({
         ← Back to Stitching Orders
       </Link>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Order #{order.id}</h1>
+        <h1 className="text-2xl font-semibold">
+          Order #{order.id} <span className="font-mono text-base text-ink-muted">({formatSerialNumber(order.serialNumber)})</span>
+        </h1>
         <DeleteOrderButton orderId={order.id} redirectTo="/tailor" />
       </div>
       <StitchOrderDetail order={order} />

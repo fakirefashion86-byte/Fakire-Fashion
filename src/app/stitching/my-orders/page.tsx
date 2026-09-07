@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StitchOrderFeedbackComplaint from "@/components/StitchOrderFeedbackComplaint";
 import { estimatedDeliveryDate } from "@/lib/delivery";
+import { garmentLabel, formatSerialNumber } from "@/lib/garment";
 
 const BOOKING_LABELS: Record<string, string> = {
   requested: "Awaiting confirmation",
@@ -57,7 +58,10 @@ export default async function MyStitchOrdersPage() {
           {orders.map((order) => (
             <div key={order.id} className="rounded-lg border border-border p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-medium">{order.stitchCategory.name}</p>
+                <div>
+                  <p className="font-medium">{garmentLabel(order)}</p>
+                  <p className="font-mono text-xs text-ink-muted">{formatSerialNumber(order.serialNumber)}</p>
+                </div>
                 <div className="flex items-center gap-2">
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium ${BOOKING_COLORS[order.bookingStatus]}`}

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import FeedbackModerationActions from "@/components/admin/FeedbackModerationActions";
+import { garmentLabel } from "@/lib/garment";
 
 export default async function AdminFeedbackPage() {
   const feedback = await prisma.stitchFeedback.findMany({
@@ -19,7 +20,7 @@ export default async function AdminFeedbackPage() {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="font-medium">
-                    {f.stitchOrder.customerName} · {f.stitchOrder.stitchCategory.name} (Order #{f.stitchOrderId})
+                    {f.stitchOrder.customerName} · {garmentLabel(f.stitchOrder)} (Order #{f.stitchOrderId})
                   </p>
                   <p className="text-sm">
                     {"★".repeat(f.rating)}

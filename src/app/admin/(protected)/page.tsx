@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { garmentLabel } from "@/lib/garment";
 
 export default async function AdminDashboardPage() {
   const [
@@ -10,6 +11,7 @@ export default async function AdminDashboardPage() {
     pendingTailorCount,
     pendingBookingCount,
     pendingFeedbackCount,
+    pendingProductReviewCount,
     openComplaintCount,
     recentOrders,
     recentStitchOrders,
@@ -21,6 +23,7 @@ export default async function AdminDashboardPage() {
     prisma.user.count({ where: { role: "tailor", approved: false } }),
     prisma.stitchOrder.count({ where: { bookingStatus: "requested" } }),
     prisma.stitchFeedback.count({ where: { status: "pending" } }),
+    prisma.productReview.count({ where: { status: "pending" } }),
     prisma.complaint.count({ where: { status: { not: "resolved" } } }),
     prisma.order.findMany({
       orderBy: { createdAt: "desc" },
@@ -42,6 +45,7 @@ export default async function AdminDashboardPage() {
     { label: "Pending Tailors", value: pendingTailorCount, href: "/admin/tailors" },
     { label: "Enquiries", value: enquiryCount, href: "/admin/settings" },
     { label: "Feedback To Review", value: pendingFeedbackCount, href: "/admin/feedback" },
+    { label: "Product Reviews To Review", value: pendingProductReviewCount, href: "/admin/product-reviews" },
     { label: "Open Complaints", value: openComplaintCount, href: "/admin/complaints" },
   ];
 
@@ -51,6 +55,7 @@ export default async function AdminDashboardPage() {
     { href: "/admin/orders", label: "View Orders" },
     { href: "/admin/stitch-orders", label: "View Stitch Orders" },
     { href: "/admin/feedback", label: "Feedback & Ratings" },
+    { href: "/admin/product-reviews", label: "Product Reviews" },
     { href: "/admin/complaints", label: "Complaints" },
     { href: "/admin/customers", label: "View Customers" },
     { href: "/admin/tailors", label: "Manage Tailors" },
@@ -145,7 +150,7 @@ export default async function AdminDashboardPage() {
                 {recentStitchOrders.map((o) => (
                   <tr key={o.id} className="border-b border-divider">
                     <td className="py-2">{o.customerName}</td>
-                    <td className="py-2">{o.stitchCategory.name}</td>
+                    <td className="py-2">{garmentLabel(o)}</td>
                     <td className="py-2 capitalize">{o.status.replace("_", " ")}</td>
                   </tr>
                 ))}

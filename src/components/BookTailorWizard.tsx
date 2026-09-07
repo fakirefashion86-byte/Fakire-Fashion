@@ -24,7 +24,8 @@ export default function BookTailorForm({
   const router = useRouter();
 
   const [gender, setGender] = useState<"male" | "female">("male");
-  const [stitchCategoryId, setStitchCategoryId] = useState<number | "">("");
+  const [stitchCategoryId, setStitchCategoryId] = useState<number | "" | "custom">("");
+  const [customGarmentName, setCustomGarmentName] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTimeSlot, setPreferredTimeSlot] = useState("");
   const [customer, setCustomer] = useState(defaultValues);
@@ -48,13 +49,21 @@ export default function BookTailorForm({
   function handleGenderChange(next: "male" | "female") {
     setGender(next);
     setStitchCategoryId("");
+    setCustomGarmentName("");
   }
 
   const isLucknow = delivery.city.trim().toLowerCase() === SERVICE_CITY;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const validation = validateBooking(stitchCategoryId, preferredDate, preferredTimeSlot, customer, delivery);
+    const validation = validateBooking(
+      stitchCategoryId,
+      customGarmentName,
+      preferredDate,
+      preferredTimeSlot,
+      customer,
+      delivery
+    );
     setErrors(validation);
     if (Object.keys(validation).length > 0) {
       setError(null);
@@ -72,7 +81,8 @@ export default function BookTailorForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          stitchCategoryId,
+          stitchCategoryId: stitchCategoryId === "custom" || stitchCategoryId === "" ? undefined : stitchCategoryId,
+          customGarmentName: stitchCategoryId === "custom" ? customGarmentName.trim() : undefined,
           measurements: {}, // Tailor takes measurements in person
           preferredDate,
           preferredTimeSlot,
@@ -134,6 +144,12 @@ export default function BookTailorForm({
         stitchCategoryId={stitchCategoryId}
         onStitchCategoryChange={(id) => {
           setStitchCategoryId(id);
+          if (id !== "custom") setCustomGarmentName("");
+          clearError("garment");
+        }}
+        customGarmentName={customGarmentName}
+        onCustomGarmentNameChange={(name) => {
+          setCustomGarmentName(name);
           clearError("garment");
         }}
         preferredDate={preferredDate}

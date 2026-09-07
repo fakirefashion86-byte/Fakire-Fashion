@@ -6,16 +6,20 @@ import { useState } from "react";
 export default function FeedbackModerationActions({
   feedbackId,
   status,
+  endpoint = "/api/admin/stitch-feedback",
 }: {
   feedbackId: number;
   status: string;
+  /** Base API path for the resource being moderated — lets this component be reused
+   * for other review-like resources (e.g. product reviews), not just stitch feedback. */
+  endpoint?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function setStatus(status: "approved" | "hidden") {
     setLoading(true);
-    await fetch(`/api/admin/stitch-feedback/${feedbackId}`, {
+    await fetch(`${endpoint}/${feedbackId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -27,7 +31,7 @@ export default function FeedbackModerationActions({
   async function remove() {
     if (!confirm("Remove this feedback permanently?")) return;
     setLoading(true);
-    await fetch(`/api/admin/stitch-feedback/${feedbackId}`, { method: "DELETE" });
+    await fetch(`${endpoint}/${feedbackId}`, { method: "DELETE" });
     setLoading(false);
     router.refresh();
   }

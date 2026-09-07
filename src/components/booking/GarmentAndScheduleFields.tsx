@@ -4,6 +4,9 @@ type Category = { id: number; name: string; gender: "male" | "female" };
 
 const TIME_SLOTS = ["Morning (9 AM - 12 PM)", "Afternoon (12 PM - 3 PM)", "Evening (3 PM - 6 PM)"];
 
+// Sentinel <option> value for "type your own garment" — never a real category id.
+const CUSTOM_GARMENT_VALUE = "custom";
+
 /** Garment gender/type picker plus preferred date and time slot. */
 export default function GarmentAndScheduleFields({
   gender,
@@ -11,6 +14,8 @@ export default function GarmentAndScheduleFields({
   categories,
   stitchCategoryId,
   onStitchCategoryChange,
+  customGarmentName,
+  onCustomGarmentNameChange,
   preferredDate,
   onDateChange,
   preferredTimeSlot,
@@ -20,14 +25,19 @@ export default function GarmentAndScheduleFields({
   gender: "male" | "female";
   onGenderChange: (g: "male" | "female") => void;
   categories: Category[];
-  stitchCategoryId: number | "";
-  onStitchCategoryChange: (id: number) => void;
+  /** "" = nothing picked, "custom" = customer is typing their own garment name below. */
+  stitchCategoryId: number | "" | typeof CUSTOM_GARMENT_VALUE;
+  onStitchCategoryChange: (id: number | "" | typeof CUSTOM_GARMENT_VALUE) => void;
+  customGarmentName: string;
+  onCustomGarmentNameChange: (name: string) => void;
   preferredDate: string;
   onDateChange: (date: string) => void;
   preferredTimeSlot: string;
   onTimeSlotChange: (slot: string) => void;
   errors: BookingFieldErrors;
 }) {
+  const isCustom = stitchCategoryId === CUSTOM_GARMENT_VALUE;
+
   return (
     <>
       <div>
@@ -56,7 +66,10 @@ export default function GarmentAndScheduleFields({
           id="garment"
           required
           value={stitchCategoryId}
-          onChange={(e) => onStitchCategoryChange(Number(e.target.value))}
+          onChange={(e) => {
+            const value = e.target.value;
+            onStitchCategoryChange(value === CUSTOM_GARMENT_VALUE ? value : value === "" ? "" : Number(value));
+          }}
           className={`w-full glass-input p-3 rounded-lg ${errors.garment ? "border-error" : ""}`}
         >
           <option value="" disabled>
@@ -67,7 +80,20 @@ export default function GarmentAndScheduleFields({
               {c.name}
             </option>
           ))}
+          <option value={CUSTOM_GARMENT_VALUE}>Other (type your own)</option>
         </select>
+        {isCustom && (
+          <input
+            type="text"
+            required
+            autoFocus
+            value={customGarmentName}
+            onChange={(e) => onCustomGarmentNameChange(e.target.value)}
+            placeholder="Type the garment you want stitched"
+            maxLength={120}
+            className={`mt-2 w-full glass-input p-3 rounded-lg ${errors.garment ? "border-error" : ""}`}
+          />
+        )}
         {errors.garment && <p className="mt-1.5 text-xs text-error">{errors.garment}</p>}
       </div>
 

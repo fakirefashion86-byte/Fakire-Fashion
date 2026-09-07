@@ -104,6 +104,7 @@ model User {
   complaints     Complaint[]
   notifications  Notification[]
   pushSubscriptions PushSubscription[]
+  productReviews ProductReview[]
 
   @@map("users")
 }
@@ -181,6 +182,7 @@ model Product {
   cartItems     CartItem[]
   orderItems    OrderItem[]
   wishlistItems WishlistItem[]
+  reviews       ProductReview[]
 
   @@map("products")
 }
@@ -302,8 +304,14 @@ model StitchCategory {
 
 model StitchOrder {
   id                 Int           @id @default(autoincrement())
+  /// Human-facing tracking number, separate sequence from `id` so it stays stable
+  /// and visible to admin/tailor/customer for "track by serial number" support.
+  serialNumber       Int           @unique @default(autoincrement())
   userId             Int
-  stitchCategoryId   Int
+  /// Null when the customer typed a garment name instead of picking a listed category.
+  stitchCategoryId   Int?
+  /// Free-text garment name when no matching category was selected (see stitchCategoryId).
+  customGarmentName  String?
   measurements       Json
   suitImage          String?
   customerName       String
@@ -330,7 +338,7 @@ model StitchOrder {
   createdAt          DateTime      @default(now())
 
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stitchCategory StitchCategory  @relation(fields: [stitchCategoryId], references: [id])
+  stitchCategory StitchCategory? @relation(fields: [stitchCategoryId], references: [id])
   feedback       StitchFeedback?
   complaints     Complaint[]
 
@@ -351,6 +359,27 @@ model StitchFeedback {
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("stitch_feedback")
+}
+
+// A customer review of a catalog product (ready-made garment bought via the cart/checkout
+// flow — "shipped order" reviews), shown on the product page once an admin approves it.
+// Distinct from StitchFeedback, which rates a custom tailoring booking, not a product.
+model ProductReview {
+  id        Int            @id @default(autoincrement())
+  productId Int
+  userId    Int
+  rating    Int
+  comment   String?
+  status    FeedbackStatus @default(pending)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, userId])
+  @@index([productId])
+  @@map("product_reviews")
 }
 
 model Complaint {

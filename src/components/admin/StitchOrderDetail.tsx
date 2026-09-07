@@ -5,9 +5,11 @@ import BookingStatusActions from "@/components/admin/BookingStatusActions";
 import CopyCoordinatesButton from "@/components/CopyCoordinatesButton";
 import { buildDirectionsUrl } from "@/lib/directions";
 import { estimatedDeliveryDate } from "@/lib/delivery";
+import { garmentLabel, formatSerialNumber } from "@/lib/garment";
 
 type Order = {
   id: number;
+  serialNumber: number;
   status: string;
   bookingStatus: string;
   visitCompleted: boolean;
@@ -21,7 +23,8 @@ type Order = {
   preferredDate: Date;
   preferredTimeSlot: string;
   measurements: unknown;
-  stitchCategory: { name: string };
+  stitchCategory: { name: string } | null;
+  customGarmentName: string | null;
   feedback: { rating: number; comment: string | null; status: string } | null;
   complaints: { id: number; subject: string; description: string; status: string; createdAt: Date }[];
 };
@@ -41,7 +44,10 @@ export default function StitchOrderDetail({ order }: { order: Order }) {
     <div className="flex flex-col gap-6">
       <div className="rounded-lg border border-border p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-semibold">{order.stitchCategory.name}</h2>
+          <div>
+            <h2 className="text-lg font-semibold">{garmentLabel(order)}</h2>
+            <p className="font-mono text-xs text-ink-muted">{formatSerialNumber(order.serialNumber)}</p>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <BookingStatusActions orderId={order.id} bookingStatus={order.bookingStatus} />
             <VisitToggle orderId={order.id} completed={order.visitCompleted} />
