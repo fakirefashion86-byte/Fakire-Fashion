@@ -219,7 +219,6 @@ export default function CheckoutForm({
                     <span className="mt-0.5 block text-xs text-black/60">Pay in cash when your order is delivered.</span>
                   </span>
                 </label>
-                <p className="mt-3 text-xs text-black/50">Online payment gateways aren&apos;t enabled yet.</p>
               </div>
 
               {submitError && (

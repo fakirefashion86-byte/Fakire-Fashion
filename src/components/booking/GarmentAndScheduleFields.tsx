@@ -4,7 +4,7 @@ type Category = { id: number; name: string; gender: "male" | "female" };
 
 const TIME_SLOTS = ["Morning (9 AM - 12 PM)", "Afternoon (12 PM - 3 PM)", "Evening (3 PM - 6 PM)"];
 
-// Sentinel <option> value for "type your own garment" — never a real category id.
+// Sentinel value meaning "customer is typing their own garment name" — never a real category id.
 const CUSTOM_GARMENT_VALUE = "custom";
 
 /** Garment gender/type picker plus preferred date and time slot. */
@@ -36,7 +36,20 @@ export default function GarmentAndScheduleFields({
   onTimeSlotChange: (slot: string) => void;
   errors: BookingFieldErrors;
 }) {
-  const isCustom = stitchCategoryId === CUSTOM_GARMENT_VALUE;
+  const selectedCategory =
+    typeof stitchCategoryId === "number" ? categories.find((c) => c.id === stitchCategoryId) : undefined;
+  const garmentText = selectedCategory ? selectedCategory.name : stitchCategoryId === CUSTOM_GARMENT_VALUE ? customGarmentName : "";
+
+  function handleGarmentTextChange(value: string) {
+    const match = categories.find((c) => c.name.toLowerCase() === value.trim().toLowerCase());
+    if (match) {
+      onStitchCategoryChange(match.id);
+      onCustomGarmentNameChange("");
+    } else {
+      onStitchCategoryChange(value === "" ? "" : CUSTOM_GARMENT_VALUE);
+      onCustomGarmentNameChange(value);
+    }
+  }
 
   return (
     <>
@@ -62,38 +75,23 @@ export default function GarmentAndScheduleFields({
         <label htmlFor="garment" className="block text-sm font-medium text-white/80 mb-3">
           Garment Type
         </label>
-        <select
+        <input
           id="garment"
+          type="text"
           required
-          value={stitchCategoryId}
-          onChange={(e) => {
-            const value = e.target.value;
-            onStitchCategoryChange(value === CUSTOM_GARMENT_VALUE ? value : value === "" ? "" : Number(value));
-          }}
+          list="garment-options"
+          value={garmentText}
+          onChange={(e) => handleGarmentTextChange(e.target.value)}
+          placeholder="Select or type a garment"
+          maxLength={120}
+          autoComplete="off"
           className={`w-full glass-input p-3 rounded-lg ${errors.garment ? "border-error" : ""}`}
-        >
-          <option value="" disabled>
-            Select a garment
-          </option>
+        />
+        <datalist id="garment-options">
           {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
+            <option key={c.id} value={c.name} />
           ))}
-          <option value={CUSTOM_GARMENT_VALUE}>Other (type your own)</option>
-        </select>
-        {isCustom && (
-          <input
-            type="text"
-            required
-            autoFocus
-            value={customGarmentName}
-            onChange={(e) => onCustomGarmentNameChange(e.target.value)}
-            placeholder="Type the garment you want stitched"
-            maxLength={120}
-            className={`mt-2 w-full glass-input p-3 rounded-lg ${errors.garment ? "border-error" : ""}`}
-          />
-        )}
+        </datalist>
         {errors.garment && <p className="mt-1.5 text-xs text-error">{errors.garment}</p>}
       </div>
 

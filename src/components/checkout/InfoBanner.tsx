@@ -9,7 +9,7 @@ export default function InfoBanner() {
         </span>
         <div>
           <p className="text-sm font-semibold text-black">Your information is safe with us</p>
-          <p className="text-xs text-black/60">Your order will be placed as Cash on Delivery for now.</p>
+          <p className="text-xs text-black/60">We use industry-standard encryption to protect your data.</p>
         </div>
       </div>
       <span className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 sm:flex">

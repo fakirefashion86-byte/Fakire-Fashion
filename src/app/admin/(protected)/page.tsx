@@ -105,26 +105,23 @@ export default async function AdminDashboardPage() {
           {recentOrders.length === 0 ? (
             <p className="text-sm text-ink-muted">No orders yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-ink-muted">
-                  <th className="py-2">Order #</th>
-                  <th className="py-2">Customer</th>
-                  <th className="py-2">Total</th>
-                  <th className="py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.map((o) => (
-                  <tr key={o.id} className="border-b border-divider">
-                    <td className="py-2">{o.orderNumber}</td>
-                    <td className="py-2">{o.name}</td>
-                    <td className="py-2">₹{Number(o.netAmount).toFixed(0)}</td>
-                    <td className="py-2 capitalize">{o.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="grid gap-2">
+              {recentOrders.map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{o.name}</p>
+                    <p className="truncate font-mono text-xs text-ink-muted">{o.orderNumber}</p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-sm font-medium">₹{Number(o.netAmount).toFixed(0)}</p>
+                    <p className="text-xs capitalize text-ink-muted">{o.status}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
@@ -138,24 +135,20 @@ export default async function AdminDashboardPage() {
           {recentStitchOrders.length === 0 ? (
             <p className="text-sm text-ink-muted">No stitching orders yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-ink-muted">
-                  <th className="py-2">Customer</th>
-                  <th className="py-2">Garment</th>
-                  <th className="py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentStitchOrders.map((o) => (
-                  <tr key={o.id} className="border-b border-divider">
-                    <td className="py-2">{o.customerName}</td>
-                    <td className="py-2">{garmentLabel(o)}</td>
-                    <td className="py-2 capitalize">{o.status.replace("_", " ")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="grid gap-2">
+              {recentStitchOrders.map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{o.customerName}</p>
+                    <p className="truncate text-xs text-ink-muted">{garmentLabel(o)}</p>
+                  </div>
+                  <p className="shrink-0 text-xs capitalize text-ink-muted">{o.status.replace("_", " ")}</p>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

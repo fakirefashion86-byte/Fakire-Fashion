@@ -55,7 +55,44 @@ export default async function AdminStitchOrdersPage({ searchParams }: Props) {
         ))}
       </div>
 
-      <table className="w-full text-sm">
+      {/* Card layout — used on all screens up to lg, avoids cramming 9 columns into a phone row */}
+      <div className="grid gap-3 lg:hidden">
+        {orders.map((o) => (
+          <div key={o.id} className="rounded-lg border border-border p-4">
+            <div className="flex items-start justify-between gap-2">
+              <span className="font-mono text-xs text-ink-muted">{formatSerialNumber(o.serialNumber)}</span>
+              <StitchStatusSelect orderId={o.id} status={o.status} />
+            </div>
+
+            <div className="mt-2">
+              <p className="font-medium text-foreground">{o.customerName}</p>
+              <p className="text-sm text-ink-secondary">{garmentLabel(o)}</p>
+              <p className="text-xs text-ink-muted">
+                {o.customerEmail} · {o.customerMobile}
+              </p>
+            </div>
+
+            <p className="mt-2 text-xs text-ink-muted">
+              Visit: {o.preferredDate.toDateString()} · {o.preferredTimeSlot}
+            </p>
+
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-divider pt-3">
+              <BookingStatusActions orderId={o.id} bookingStatus={o.bookingStatus} />
+              <VisitToggle orderId={o.id} completed={o.visitCompleted} />
+            </div>
+
+            <div className="mt-3 flex items-center gap-3 border-t border-divider pt-3 text-xs">
+              <Link href={`/admin/stitch-orders/${o.id}`} className="text-accent hover:underline">
+                View / Measurements
+              </Link>
+              <DeleteOrderButton orderId={o.id} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Table layout — used from lg up, where there's room for columns */}
+      <table className="hidden w-full text-sm lg:table">
         <thead>
           <tr className="border-b border-border text-left text-ink-muted">
             <th className="py-2">Serial #</th>

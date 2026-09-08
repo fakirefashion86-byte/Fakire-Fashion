@@ -4,36 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
 import PromoStrip from "@/components/PromoStrip";
 import { getSession } from "@/lib/auth";
-import {
-  AwardIcon,
-  ScissorsIcon,
-  ShieldIcon,
-  TruckIcon,
-} from "@/components/icons";
 import { DEFAULT_HOMEPAGE_CONTENT, HOMEPAGE_CONTENT_KEY, HomepageContent } from "@/lib/siteContent";
-
-const FEATURES = [
-  {
-    icon: AwardIcon,
-    title: "Premium Quality",
-    subtitle: "Finest materials handpicked for you",
-  },
-  {
-    icon: ScissorsIcon,
-    title: "Custom Tailoring",
-    subtitle: "Made to measure just for you",
-  },
-  {
-    icon: ShieldIcon,
-    title: "Perfect Fit",
-    subtitle: "Tailored to perfection, every time",
-  },
-  {
-    icon: TruckIcon,
-    title: "On-Time Delivery",
-    subtitle: "Delivered to your doorstep",
-  },
-];
 
 export default async function HomePage() {
   // Cookie read only, no DB round trip — resolve it first so the (session-
@@ -97,32 +68,6 @@ export default async function HomePage() {
             ))}
           </div>
         )}
-      </section>
-
-      {/* Feature strip */}
-      <section className="border-y border-border bg-section">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:grid-cols-4">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-left">
-              <f.icon className="h-7 w-7 text-icon" />
-              <p className="text-sm font-semibold text-foreground">{f.title}</p>
-              <p className="text-xs text-ink-muted">{f.subtitle}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA banner */}
-      <section className="bg-btn">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-12 text-center sm:flex-row sm:text-left">
-          <p className="whitespace-pre-line font-serif text-2xl text-btn-text">{content.ctaHeading}</p>
-          <Link
-            href="/stitching/new"
-            className="whitespace-nowrap rounded bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/85"
-          >
-            {content.ctaButtonText}
-          </Link>
-        </div>
       </section>
     </div>
   );

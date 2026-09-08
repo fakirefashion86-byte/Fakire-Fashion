@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
@@ -6,23 +5,9 @@ import ProductGallery from "@/components/ProductGallery";
 import AddToCartPanel from "@/components/AddToCartPanel";
 import StickyAddToCart from "@/components/StickyAddToCart";
 import ProductReviewForm from "@/components/ProductReviewForm";
-import {
-  StarIcon,
-  HeartIcon,
-  ShieldIcon,
-  MedalIcon,
-  RefreshIcon,
-  DeliveryVanIcon,
-} from "@/components/icons";
+import { StarIcon, HeartIcon } from "@/components/icons";
 
 type Props = { params: Promise<{ id: string }> };
-
-const TRUST_BADGES = [
-  { icon: ShieldIcon, title: "Secure Payments", desc: "100% safe & secure checkout" },
-  { icon: MedalIcon, title: "Premium Quality", desc: "Finest fabric & craftsmanship" },
-  { icon: RefreshIcon, title: "Easy Returns", desc: "7 days easy return policy" },
-  { icon: DeliveryVanIcon, title: "Free Shipping", desc: "On orders above ₹1999" },
-];
 
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
@@ -123,36 +108,7 @@ export default async function ProductPage({ params }: Props) {
               }))}
               loggedIn={Boolean(session)}
             />
-
-            <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 rounded-xl border border-[#EAD9B8] bg-white/60 p-5 sm:grid-cols-4">
-              {TRUST_BADGES.map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="flex flex-col items-center gap-2 text-center">
-                  <Icon className="h-6 w-6 text-[#B8860B]" />
-                  <p className="text-xs font-semibold text-[#2b2116]">{title}</p>
-                  <p className="text-[11px] leading-snug text-[#8a6d2f]">{desc}</p>
-                </div>
-              ))}
-            </div>
           </div>
-        </div>
-
-        <div className="mx-auto mt-10 flex max-w-2xl flex-col gap-3 sm:flex-row">
-          <Link
-            href="/stitching/new"
-            className="flex flex-1 items-center justify-center rounded-lg bg-[#15110b] px-4 py-3 text-sm font-semibold text-[#F2D98A]"
-          >
-            Book Measurement
-          </Link>
-          <a
-            href={`https://wa.me/919454282015?text=${encodeURIComponent(
-              `Hi, I'm interested in the ${product.name}.`
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-1 items-center justify-center rounded-lg border border-[#E3D3AC] px-4 py-3 text-sm font-semibold text-[#2b2116] hover:border-[#C7A03D]"
-          >
-            WhatsApp Us
-          </a>
         </div>
 
         <div className="mx-auto mt-12 max-w-2xl">

@@ -26,7 +26,7 @@ export default function ProductReviewForm({ productId, loggedIn }: { productId: 
   if (submitted) {
     return (
       <p className="text-sm text-[#3F7A4E]">
-        Thanks! Your review has been submitted and will appear here once approved.
+        Thanks for sharing your experience!
       </p>
     );
   }
