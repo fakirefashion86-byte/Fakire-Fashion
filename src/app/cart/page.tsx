@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Script from "next/script";
 import { getSession } from "@/lib/auth";
 import CartView from "@/components/CartView";
 import { ChevronLeftIcon } from "@/components/icons";
@@ -32,6 +33,11 @@ export default async function CartPage() {
       <div className="mx-auto max-w-3xl px-4">
         <CartView />
       </div>
+
+      <div className="mx-auto max-w-3xl px-4 pt-6">
+        <section data-zone-id="4452830a-88db-45fd-9c8f-2e055a96229f"></section>
+      </div>
+      <Script async src="https://tag.adsbender.com/assets/publisher_tag.js" strategy="afterInteractive" />
     </div>
   );
 }
