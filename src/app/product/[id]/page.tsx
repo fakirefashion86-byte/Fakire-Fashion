@@ -136,6 +136,10 @@ export default async function ProductPage({ params }: Props) {
             </div>
           )}
         </div>
+
+        <div className="mx-auto mt-10 max-w-2xl">
+          <section data-zone-id="7ac38d0d-1796-4617-b176-129f44d30a89"></section>
+        </div>
       </div>
 
       <StickyAddToCart
