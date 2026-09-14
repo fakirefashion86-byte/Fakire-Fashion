@@ -16,7 +16,7 @@ export default function AdZone() {
   return (
     <section className="mx-auto flex max-w-6xl justify-center px-4 py-6">
       <section
-        data-zone-id="d9181176-1cbe-480e-a145-130b63d4dd56"
+        data-zone-id="7ac38d0d-1796-4617-b176-129f44d30a89"
         style={{ width: 300, height: 250 }}
       />
     </section>
