@@ -13,6 +13,7 @@ import StepFooter from "@/components/checkout/StepFooter";
 import PriceDetails from "@/components/checkout/PriceDetails";
 import OrderSummaryList, { type SummaryItem } from "@/components/checkout/OrderSummaryList";
 import { validateCheckout, type ContactValues } from "@/components/checkout/checkoutValidation";
+import { openRazorpayCheckout, verifyRazorpayPayment } from "@/lib/razorpayCheckout";
 
 // Indigo accent for actions/progress, green for savings, amber/red for
 // warnings. DeliveryAddressSection keeps its own theme colors — it's
@@ -48,6 +49,7 @@ export default function CheckoutForm({
   const [errors, setErrors] = useState<ReturnType<typeof validateCheckout>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "RAZORPAY">("COD");
   // One token per checkout attempt: if the request is retried (double-click,
   // network hiccup + resubmit) the server reuses the same order instead of
   // creating a duplicate. Lazy initializer so the (impure) token generation
@@ -88,6 +90,7 @@ export default function CheckoutForm({
         latitude: delivery.latitude,
         longitude: delivery.longitude,
         clientToken,
+        paymentMethod,
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -117,6 +120,24 @@ export default function CheckoutForm({
           longitude: delivery.longitude,
         }),
       }).catch(() => {});
+    }
+
+    // The order is already saved (pending) at this point regardless of what
+    // happens with the payment popup below, so every path — success, the
+    // customer closing the modal, or the gateway failing to load — ends by
+    // sending them to the order page; if it's still unpaid, that page offers
+    // a way to retry payment.
+    if (paymentMethod === "RAZORPAY" && data.razorpay && !data.razorpay.error) {
+      try {
+        const result = await openRazorpayCheckout(data.razorpay, {
+          name: contact.name,
+          email: contact.email,
+          contact: contact.mobile,
+        });
+        await verifyRazorpayPayment(result);
+      } catch {
+        // Cancelled or gateway didn't load — order stays pending/unpaid.
+      }
     }
 
     router.push(`/orders/${data.order.id}?placed=1`);
@@ -212,13 +233,44 @@ export default function CheckoutForm({
             <div className="flex flex-col gap-5">
               <div className="rounded-lg border border-black/15 p-5">
                 <h2 className="mb-4 text-base font-semibold text-black">Payment Method</h2>
-                <label className="flex items-start gap-3 rounded border border-indigo-500 bg-indigo-50 p-4">
-                  <input type="radio" checked readOnly className="mt-0.5 accent-indigo-600" />
-                  <span>
-                    <span className="block text-sm font-semibold text-black">Cash on Delivery</span>
-                    <span className="mt-0.5 block text-xs text-black/60">Pay in cash when your order is delivered.</span>
-                  </span>
-                </label>
+                <div className="flex flex-col gap-3">
+                  <label
+                    className={`flex items-start gap-3 rounded border p-4 ${
+                      paymentMethod === "RAZORPAY" ? "border-indigo-500 bg-indigo-50" : "border-black/15"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      checked={paymentMethod === "RAZORPAY"}
+                      onChange={() => setPaymentMethod("RAZORPAY")}
+                      className="mt-0.5 accent-indigo-600"
+                    />
+                    <span>
+                      <span className="block text-sm font-semibold text-black">Pay Online</span>
+                      <span className="mt-0.5 block text-xs text-black/60">
+                        UPI, Cards, Netbanking &amp; Wallets, via Razorpay.
+                      </span>
+                    </span>
+                  </label>
+                  <label
+                    className={`flex items-start gap-3 rounded border p-4 ${
+                      paymentMethod === "COD" ? "border-indigo-500 bg-indigo-50" : "border-black/15"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      checked={paymentMethod === "COD"}
+                      onChange={() => setPaymentMethod("COD")}
+                      className="mt-0.5 accent-indigo-600"
+                    />
+                    <span>
+                      <span className="block text-sm font-semibold text-black">Cash on Delivery</span>
+                      <span className="mt-0.5 block text-xs text-black/60">Pay in cash when your order is delivered.</span>
+                    </span>
+                  </label>
+                </div>
               </div>
 
               {submitError && (

@@ -18,6 +18,7 @@
     "framer-motion": "^12.42.2",
     "jsonwebtoken": "^9.0.3",
     "next": "16.2.11",
+    "razorpay": "^2.9.8",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "web-push": "^3.6.7",

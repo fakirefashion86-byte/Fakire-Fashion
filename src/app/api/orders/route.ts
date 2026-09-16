@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
+import { Prisma, type Order } from "@prisma/client";
 import { z } from "zod";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notifyAdmins, notifyUser } from "@/lib/notifications";
+import { ensureRazorpayOrder } from "@/lib/razorpay";
 
 const SHIPPING_CHARGE = 0;
 
@@ -28,6 +29,7 @@ const checkoutSchema = z.object({
   longitude: z.number().min(-180).max(180).nullable().optional(),
   // Optional so older/other clients still work; when present it de-dupes retried submits.
   clientToken: z.string().trim().min(1).max(100).optional(),
+  paymentMethod: z.enum(["COD", "RAZORPAY"]).default("COD"),
 });
 
 export async function GET() {
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
     const firstError = parsed.error.issues[0]?.message ?? "Invalid shipping details";
     return NextResponse.json({ error: firstError }, { status: 400 });
   }
-  const { clientToken, ...shipping } = parsed.data;
+  const { clientToken, paymentMethod, ...shipping } = parsed.data;
 
   // A retried submit with the same token returns the order already created for it,
   // instead of erroring on an (already-emptied) cart or creating a duplicate order.
@@ -62,7 +64,12 @@ export async function POST(req: NextRequest) {
       where: { userId_clientToken: { userId: session.userId, clientToken } },
       include: { items: true },
     });
-    if (existingOrder) return NextResponse.json({ order: existingOrder });
+    if (existingOrder) {
+      return NextResponse.json({
+        order: existingOrder,
+        razorpay: await attachRazorpay(existingOrder),
+      });
+    }
   }
 
   try {
@@ -115,7 +122,7 @@ export async function POST(req: NextRequest) {
           netAmount: totalAmount + SHIPPING_CHARGE,
           shippingCharges: SHIPPING_CHARGE,
           status: "pending",
-          paymentMethod: "COD",
+          paymentMethod: paymentMethod,
           paymentStatus: "pending",
           name: shipping.name,
           email: shipping.email,
@@ -181,7 +188,7 @@ export async function POST(req: NextRequest) {
       ),
     ]).catch((err) => console.error("Order notification failed", err));
 
-    return NextResponse.json({ order });
+    return NextResponse.json({ order, razorpay: await attachRazorpay(order) });
   } catch (err) {
     if (err instanceof CheckoutError) {
       return NextResponse.json({ error: err.message }, { status: 400 });
@@ -193,7 +200,9 @@ export async function POST(req: NextRequest) {
         where: { userId_clientToken: { userId: session.userId, clientToken } },
         include: { items: true },
       });
-      if (existingOrder) return NextResponse.json({ order: existingOrder });
+      if (existingOrder) {
+        return NextResponse.json({ order: existingOrder, razorpay: await attachRazorpay(existingOrder) });
+      }
     }
     console.error("Order creation failed", err);
     return NextResponse.json({ error: "Could not place order. Please try again." }, { status: 500 });
@@ -201,3 +210,24 @@ export async function POST(req: NextRequest) {
 }
 
 class CheckoutError extends Error {}
+
+/**
+ * When the order was placed for online payment, creates (or reuses) its Razorpay
+ * order and returns what the client needs to open Razorpay Checkout. Returns null
+ * for COD orders, and `{ error }` if Razorpay isn't configured or the API call
+ * failed — the order itself is still saved (pending/unpaid) either way, so the
+ * customer can retry payment from the order page.
+ */
+async function attachRazorpay(order: Order) {
+  if (order.paymentMethod !== "RAZORPAY" || order.paymentStatus === "paid") return null;
+  if (!process.env.RAZORPAY_KEY_ID) {
+    return { error: "Online payment is not configured. Please choose Cash on Delivery instead." };
+  }
+  try {
+    const { razorpayOrderId, amountPaise } = await ensureRazorpayOrder(order);
+    return { keyId: process.env.RAZORPAY_KEY_ID, orderId: razorpayOrderId, amount: amountPaise, currency: "INR" };
+  } catch (err) {
+    console.error("Razorpay order creation failed", err);
+    return { error: "Could not start online payment. Please try again or choose Cash on Delivery." };
+  }
+}

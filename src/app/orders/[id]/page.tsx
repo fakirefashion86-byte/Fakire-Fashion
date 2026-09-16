@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CancelOrderButton from "@/components/CancelOrderButton";
+import RazorpayPayButton from "@/components/RazorpayPayButton";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ placed?: string }> };
 
@@ -116,9 +117,17 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
       <div className="mt-6 rounded-lg border border-border p-4 text-sm">
         <p className="font-medium">Payment</p>
         <p className="text-ink-secondary">
-          Cash on Delivery ·{" "}
+          {order.paymentMethod === "COD" ? "Cash on Delivery" : "Pay Online (Razorpay)"} ·{" "}
           <span className="capitalize">{order.paymentStatus}</span>
         </p>
+        {order.userId === session.userId &&
+          order.paymentMethod === "RAZORPAY" &&
+          order.paymentStatus === "pending" &&
+          order.status !== "cancelled" && (
+            <div className="mt-3">
+              <RazorpayPayButton orderId={order.id} name={order.name} email={order.email} mobile={order.mobile} />
+            </div>
+          )}
       </div>
 
       <div className="mt-4 rounded-lg border border-border p-4 text-sm">
