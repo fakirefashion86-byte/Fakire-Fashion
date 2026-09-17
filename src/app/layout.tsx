@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AdZone from "@/components/AdZone";
+import StickyBanner from "@/components/StickyBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,7 @@ export default function RootLayout({
           <AdZone />
         </main>
         <Footer />
+        <StickyBanner />
       </body>
     </html>
   );
