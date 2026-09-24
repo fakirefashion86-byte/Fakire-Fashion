@@ -13,7 +13,7 @@ if (!JWT_SECRET && process.env.NODE_ENV === "production") {
 
 export type SessionPayload = {
   userId: number;
-  role: "customer" | "admin" | "tailor";
+  role: "customer" | "admin" | "tailor" | "delivery";
   // Carried in the JWT so the header/nav (rendered on every single page —
   // see components/Header.tsx) can display the user's name straight from the
   // cookie instead of hitting the DB on every navigation. Optional because
@@ -80,6 +80,12 @@ export async function requireAdmin(): Promise<SessionPayload | null> {
 export async function requireTailor(): Promise<SessionPayload | null> {
   const session = await getSession();
   if (!session || session.role !== "tailor") return null;
+  return session;
+}
+
+export async function requireDelivery(): Promise<SessionPayload | null> {
+  const session = await getSession();
+  if (!session || session.role !== "delivery") return null;
   return session;
 }
 

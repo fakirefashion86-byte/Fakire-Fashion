@@ -9,6 +9,7 @@ const PROTECTED_PREFIXES = ["/account", "/orders", "/stitching/my-orders"];
 const STAFF_AREAS: { prefix: string; publicPaths: string[]; loginPath: string }[] = [
   { prefix: "/admin", publicPaths: ["/admin/login"], loginPath: "/admin/login" },
   { prefix: "/tailor", publicPaths: ["/tailor/login", "/tailor/signup"], loginPath: "/tailor/login" },
+  { prefix: "/delivery", publicPaths: ["/delivery/login", "/delivery/signup"], loginPath: "/delivery/login" },
 ];
 
 export function middleware(req: NextRequest) {
@@ -40,5 +41,6 @@ export const config = {
     "/stitching/my-orders",
     "/admin/:path*",
     "/tailor/:path*",
+    "/delivery/:path*",
   ],
 };

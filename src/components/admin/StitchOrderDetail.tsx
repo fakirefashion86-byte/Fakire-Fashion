@@ -1,4 +1,5 @@
 import StitchStatusSelect from "@/components/admin/StitchStatusSelect";
+import StitchDeliveryPanel from "@/components/admin/StitchDeliveryPanel";
 import VisitToggle from "@/components/admin/VisitToggle";
 import MeasurementsForm from "@/components/admin/MeasurementsForm";
 import BookingStatusActions from "@/components/admin/BookingStatusActions";
@@ -25,11 +26,24 @@ type Order = {
   measurements: unknown;
   stitchCategory: { name: string } | null;
   customGarmentName: string | null;
+  deliveryPersonId: number | null;
+  deliveryPerson?: { name: string } | null;
+  deliveryOtpExpiresAt: Date | null;
   feedback: { rating: number; comment: string | null; status: string } | null;
   complaints: { id: number; subject: string; description: string; status: string; createdAt: Date }[];
 };
 
-export default function StitchOrderDetail({ order }: { order: Order }) {
+type DeliveryBoy = { id: number; name: string; email: string };
+
+export default function StitchOrderDetail({
+  order,
+  isAdmin = false,
+  deliveryBoys = [],
+}: {
+  order: Order;
+  isAdmin?: boolean;
+  deliveryBoys?: DeliveryBoy[];
+}) {
   const mapHref =
     order.latitude != null && order.longitude != null
       ? `https://www.google.com/maps/search/?api=1&query=${order.latitude},${order.longitude}`
@@ -91,6 +105,16 @@ export default function StitchOrderDetail({ order }: { order: Order }) {
           </div>
         )}
       </div>
+
+      <StitchDeliveryPanel
+        orderId={order.id}
+        status={order.status}
+        deliveryPersonId={order.deliveryPersonId}
+        deliveryPersonName={order.deliveryPerson?.name ?? null}
+        deliveryOtpExpiresAt={order.deliveryOtpExpiresAt?.toISOString() ?? null}
+        deliveryBoys={deliveryBoys}
+        isAdmin={isAdmin}
+      />
 
       <div className="rounded-lg border border-border p-4">
         <MeasurementsForm

@@ -11,10 +11,22 @@ export default async function AdminStitchOrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const order = await prisma.stitchOrder.findUnique({
-    where: { id: Number(id) },
-    include: { stitchCategory: true, feedback: true, complaints: { orderBy: { createdAt: "desc" } } },
-  });
+  const [order, deliveryBoys] = await Promise.all([
+    prisma.stitchOrder.findUnique({
+      where: { id: Number(id) },
+      include: {
+        stitchCategory: true,
+        feedback: true,
+        complaints: { orderBy: { createdAt: "desc" } },
+        deliveryPerson: { select: { name: true } },
+      },
+    }),
+    prisma.user.findMany({
+      where: { role: "delivery", approved: true },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
   if (!order) notFound();
 
   return (
@@ -28,7 +40,7 @@ export default async function AdminStitchOrderDetailPage({
         </h1>
         <DeleteOrderButton orderId={order.id} redirectTo="/admin/stitch-orders" />
       </div>
-      <StitchOrderDetail order={order} />
+      <StitchOrderDetail order={order} isAdmin deliveryBoys={deliveryBoys} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import OrderStatusSelect from "@/components/admin/OrderStatusSelect";
+import OrderDeliveryPanel from "@/components/admin/OrderDeliveryPanel";
 import CopyCoordinatesButton from "@/components/CopyCoordinatesButton";
 import { buildDirectionsUrl } from "@/lib/directions";
 
@@ -9,10 +10,21 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function AdminOrderDetailPage({ params }: Props) {
   const { id } = await params;
-  const order = await prisma.order.findUnique({
-    where: { id: Number(id) },
-    include: { items: true, user: { select: { name: true, email: true, mobile: true } } },
-  });
+  const [order, deliveryBoys] = await Promise.all([
+    prisma.order.findUnique({
+      where: { id: Number(id) },
+      include: {
+        items: true,
+        user: { select: { name: true, email: true, mobile: true } },
+        deliveryPerson: { select: { name: true } },
+      },
+    }),
+    prisma.user.findMany({
+      where: { role: "delivery", approved: true },
+      select: { id: true, name: true, email: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   if (!order) notFound();
 
@@ -116,6 +128,18 @@ export default async function AdminOrderDetailPage({ params }: Props) {
               {[order.city, order.state].filter(Boolean).join(", ")} {order.pincode}
             </p>
             <p>{order.country}</p>
+
+            <div className="mt-4">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-ink-muted">Delivery</h2>
+              <OrderDeliveryPanel
+                orderId={order.id}
+                status={order.status}
+                deliveryPersonId={order.deliveryPersonId}
+                deliveryPersonName={order.deliveryPerson?.name ?? null}
+                deliveryOtpExpiresAt={order.deliveryOtpExpiresAt?.toISOString() ?? null}
+                deliveryBoys={deliveryBoys}
+              />
+            </div>
 
             {hasCoords ? (
               <div className="mt-4">

@@ -15,6 +15,7 @@ enum Role {
   customer
   admin
   tailor
+  delivery
 }
 
 enum Gender {
@@ -26,6 +27,7 @@ enum OrderStatus {
   pending
   confirmed
   shipped
+  out_for_delivery
   delivered
   cancelled
 }
@@ -105,6 +107,10 @@ model User {
   notifications  Notification[]
   pushSubscriptions PushSubscription[]
   productReviews ProductReview[]
+  /// Regular product orders this user (role = delivery) is the assigned delivery person for.
+  orderDeliveries       Order[]       @relation("OrderDeliveryPerson")
+  /// Stitching orders this user (role = delivery) is the assigned delivery person for.
+  stitchOrderDeliveries StitchOrder[] @relation("StitchOrderDeliveryPerson")
 
   @@map("users")
 }
@@ -266,13 +272,27 @@ model Order {
   /// Reused on payment retry so a single order never gets two Razorpay orders.
   razorpayOrderId   String?      @unique
   razorpayPaymentId String?
+  /// Delivery person (User with role = delivery) assigned to hand-deliver this order.
+  /// Optional — an admin may instead hand-deliver it themselves without assigning anyone.
+  deliveryPersonId  Int?
+  /// Plaintext 6-digit code shown to the customer once the order is out for delivery.
+  /// Stored in the clear (not hashed) because the customer needs to re-read it from
+  /// their own order page at any point before handing it to the delivery person —
+  /// this is a delivery-confirmation code, not a credential.
+  deliveryOtp            String?
+  deliveryOtpGeneratedAt DateTime?
+  deliveryOtpExpiresAt   DateTime?
+  deliveryOtpAttempts    Int       @default(0)
+  deliveryOtpVerifiedAt  DateTime?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  user  User        @relation(fields: [userId], references: [id])
-  items OrderItem[]
+  user           User        @relation(fields: [userId], references: [id])
+  deliveryPerson User?       @relation("OrderDeliveryPerson", fields: [deliveryPersonId], references: [id])
+  items          OrderItem[]
 
   @@unique([userId, clientToken])
+  @@index([deliveryPersonId])
   @@map("orders")
 }
 
@@ -339,13 +359,25 @@ model StitchOrder {
   visitCompleted     Boolean       @default(false)
   bookingStatus      BookingStatus @default(requested)
   status             StitchStatus  @default(not_started)
+  /// Delivery person (User with role = delivery) assigned to hand-deliver the finished
+  /// garment. Optional — the tailor may instead hand-deliver it themselves at the visit.
+  deliveryPersonId   Int?
+  /// Plaintext 6-digit code shown to the customer once the garment is out for delivery.
+  /// See Order.deliveryOtp for why this is stored in the clear.
+  deliveryOtp            String?
+  deliveryOtpGeneratedAt DateTime?
+  deliveryOtpExpiresAt   DateTime?
+  deliveryOtpAttempts    Int       @default(0)
+  deliveryOtpVerifiedAt  DateTime?
   createdAt          DateTime      @default(now())
 
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   stitchCategory StitchCategory? @relation(fields: [stitchCategoryId], references: [id])
+  deliveryPerson User?           @relation("StitchOrderDeliveryPerson", fields: [deliveryPersonId], references: [id])
   feedback       StitchFeedback?
   complaints     Complaint[]
 
+  @@index([deliveryPersonId])
   @@map("stitch_orders")
 }
 

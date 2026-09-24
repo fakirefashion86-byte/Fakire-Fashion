@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 
-const STATUSES = ["not_started", "pending", "stitched", "out_for_delivery", "delivered"];
+// out_for_delivery / delivered go through the OTP flow (see StitchDeliveryPanel),
+// not a plain status change, so they're excluded from this select.
+const STATUSES = ["not_started", "pending", "stitched"];
 
 export default function StitchStatusSelect({
   orderId,
@@ -20,6 +22,18 @@ export default function StitchStatusSelect({
       body: JSON.stringify({ status: newStatus }),
     });
     router.refresh();
+  }
+
+  if (status === "out_for_delivery" || status === "delivered") {
+    return (
+      <span
+        className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
+          status === "delivered" ? "bg-success/10 text-success" : "bg-black text-white"
+        }`}
+      >
+        {status.replace(/_/g, " ")}
+      </span>
+    );
   }
 
   return (

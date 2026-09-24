@@ -18,7 +18,7 @@ export default async function AdminOrdersPage() {
           <div key={o.id} className="rounded-lg border border-border p-4">
             <div className="flex items-start justify-between gap-2">
               <span className="font-mono text-xs text-ink-muted">{o.orderNumber}</span>
-              <OrderStatusSelect orderId={o.id} status={o.status} />
+              <OrderStatusSelect orderId={o.id} status={o.status} manageHref={`/admin/orders/${o.id}`} />
             </div>
 
             <div className="mt-2">
@@ -76,7 +76,7 @@ export default async function AdminOrdersPage() {
                 <span className="capitalize text-ink-muted">({o.paymentStatus})</span>
               </td>
               <td className="py-2">
-                <OrderStatusSelect orderId={o.id} status={o.status} />
+                <OrderStatusSelect orderId={o.id} status={o.status} manageHref={`/admin/orders/${o.id}`} />
               </td>
               <td className="py-2 whitespace-nowrap">
                 <Link href={`/admin/orders/${o.id}`} className="text-accent hover:underline">

@@ -18,7 +18,7 @@ import { SearchIcon, UserIcon, HeartIcon } from "./icons";
 export default async function Header() {
   const session = await getSession();
   const user = session ? { name: session.name ?? "Account" } : null;
-  const isStaff = session?.role === "admin" || session?.role === "tailor";
+  const isStaff = session?.role === "admin" || session?.role === "tailor" || session?.role === "delivery";
   const isAdmin = session?.role === "admin";
 
   return (

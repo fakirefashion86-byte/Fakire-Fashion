@@ -8,12 +8,18 @@ import PasswordInput from "@/components/PasswordInput";
 import { ArrowRightIcon } from "@/components/icons";
 import { GOLD_INPUT_CLASS, GOLD_LABEL_CLASS, GOLD_BUTTON_CLASS, GOLD_ICON_CLASS } from "@/lib/goldAuthStyles";
 
-type Role = "customer" | "tailor";
+type Role = "customer" | "tailor" | "delivery";
+
+const STAFF_ROLE_CONFIG: Record<"tailor" | "delivery", { endpoint: string; loginHref: string; label: string }> = {
+  tailor: { endpoint: "/api/tailor/signup", loginHref: "/tailor/login", label: "tailor" },
+  delivery: { endpoint: "/api/delivery/signup", loginHref: "/delivery/login", label: "delivery partner" },
+};
 
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialRole: Role = searchParams.get("role") === "tailor" ? "tailor" : "customer";
+  const roleParam = searchParams.get("role");
+  const initialRole: Role = roleParam === "tailor" || roleParam === "delivery" ? roleParam : "customer";
 
   const [role, setRole] = useState<Role>(initialRole);
   const [name, setName] = useState("");
@@ -22,14 +28,14 @@ function RegisterForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [tailorSubmitted, setTailorSubmitted] = useState(false);
+  const [staffSubmitted, setStaffSubmitted] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const endpoint = role === "tailor" ? "/api/tailor/signup" : "/api/auth/register";
+    const endpoint = role === "customer" ? "/api/auth/register" : STAFF_ROLE_CONFIG[role].endpoint;
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -42,22 +48,23 @@ function RegisterForm() {
       return;
     }
 
-    if (role === "tailor") {
-      setTailorSubmitted(true);
+    if (role !== "customer") {
+      setStaffSubmitted(true);
       return;
     }
     router.push("/");
     router.refresh();
   }
 
-  if (tailorSubmitted) {
+  if (staffSubmitted && role !== "customer") {
+    const { loginHref, label } = STAFF_ROLE_CONFIG[role];
     return (
       <GoldAuthLayout title="Request Submitted">
         <p className="text-center text-sm text-white/70">
-          Thanks, {name}. Your tailor account request has been sent to the admin for approval.
+          Thanks, {name}. Your {label} account request has been sent to the admin for approval.
           You&apos;ll be able to log in at{" "}
-          <Link href="/tailor/login" className="text-[#e3c17a] hover:underline">
-            /tailor/login
+          <Link href={loginHref} className="text-[#e3c17a] hover:underline">
+            {loginHref}
           </Link>{" "}
           once it&apos;s approved.
         </p>
@@ -74,7 +81,7 @@ function RegisterForm() {
       }
       subtitle="Join Fakire Fashion"
     >
-      <div className="mb-5 grid grid-cols-2 gap-2 rounded-lg border border-[#d4af6a]/20 bg-white/5 p-1">
+      <div className="mb-5 grid grid-cols-3 gap-2 rounded-lg border border-[#d4af6a]/20 bg-white/5 p-1">
         <button
           type="button"
           onClick={() => setRole("customer")}
@@ -97,11 +104,23 @@ function RegisterForm() {
         >
           Tailor
         </button>
+        <button
+          type="button"
+          onClick={() => setRole("delivery")}
+          className={`rounded-md py-2 text-sm font-medium transition ${
+            role === "delivery"
+              ? "bg-gradient-to-r from-[#f0c674] to-[#d4af6a] text-black"
+              : "text-white/60 hover:text-white"
+          }`}
+        >
+          Delivery
+        </button>
       </div>
 
-      {role === "tailor" && (
+      {role !== "customer" && (
         <p className="mb-4 text-xs text-white/50">
-          Tailor accounts need admin approval before you can log in.
+          {STAFF_ROLE_CONFIG[role].label[0].toUpperCase() + STAFF_ROLE_CONFIG[role].label.slice(1)} accounts need
+          admin approval before you can log in.
         </p>
       )}
 
@@ -164,7 +183,7 @@ function RegisterForm() {
         )}
 
         <button type="submit" disabled={loading} className={GOLD_BUTTON_CLASS}>
-          {loading ? "Creating account…" : role === "tailor" ? "Request Access" : "Sign up"}
+          {loading ? "Creating account…" : role !== "customer" ? "Request Access" : "Sign up"}
           {!loading && <ArrowRightIcon className="h-4 w-4" />}
         </button>
       </form>

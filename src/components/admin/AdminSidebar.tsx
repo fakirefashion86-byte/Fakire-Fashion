@@ -14,6 +14,7 @@ const links = [
   { href: "/admin/complaints", label: "Complaints" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/tailors", label: "Tailors" },
+  { href: "/admin/delivery-boys", label: "Delivery Boys" },
   { href: "/admin/notifications", label: "Notifications" },
   { href: "/admin/content", label: "Content" },
   { href: "/admin/settings", label: "Settings" },

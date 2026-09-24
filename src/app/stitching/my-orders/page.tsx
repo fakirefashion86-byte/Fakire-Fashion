@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StitchOrderFeedbackComplaint from "@/components/StitchOrderFeedbackComplaint";
+import OtpResendButton from "@/components/OtpResendButton";
 import { estimatedDeliveryDate } from "@/lib/delivery";
 import { garmentLabel, formatSerialNumber } from "@/lib/garment";
 
@@ -86,6 +87,23 @@ export default async function MyStitchOrdersPage() {
                 <p className="mt-1 text-sm text-ink-muted">
                   Estimated delivery by {estimatedDeliveryDate(order.createdAt).toDateString()}
                 </p>
+              )}
+
+              {order.status === "out_for_delivery" && (
+                <div className="mt-3 rounded-lg border border-accent/40 bg-accent/5 p-4">
+                  <p className="text-sm font-medium">Your delivery OTP</p>
+                  <p className="mt-1 text-2xl font-semibold tracking-widest">{order.deliveryOtp}</p>
+                  <p className="mt-1 text-xs text-ink-muted">
+                    Share this code with the delivery person only after you&apos;ve received your garment, so they
+                    can confirm the handoff.
+                  </p>
+                  {order.deliveryOtpExpiresAt && (
+                    <p className="mt-1 text-xs text-ink-muted">
+                      Valid until {order.deliveryOtpExpiresAt.toLocaleString()}
+                    </p>
+                  )}
+                  <OtpResendButton resendEndpoint={`/api/stitch-orders/${order.id}/otp/resend`} />
+                </div>
               )}
 
               {order.status === "delivered" && (

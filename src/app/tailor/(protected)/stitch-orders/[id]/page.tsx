@@ -13,7 +13,12 @@ export default async function TailorStitchOrderDetailPage({
   const { id } = await params;
   const order = await prisma.stitchOrder.findUnique({
     where: { id: Number(id) },
-    include: { stitchCategory: true, feedback: true, complaints: { orderBy: { createdAt: "desc" } } },
+    include: {
+      stitchCategory: true,
+      feedback: true,
+      complaints: { orderBy: { createdAt: "desc" } },
+      deliveryPerson: { select: { name: true } },
+    },
   });
   if (!order) notFound();
 

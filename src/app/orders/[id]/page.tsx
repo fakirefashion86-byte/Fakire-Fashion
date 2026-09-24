@@ -4,15 +4,17 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import CancelOrderButton from "@/components/CancelOrderButton";
 import RazorpayPayButton from "@/components/RazorpayPayButton";
+import OtpResendButton from "@/components/OtpResendButton";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ placed?: string }> };
 
-const STATUS_STEPS = ["pending", "confirmed", "shipped", "delivered"] as const;
+const STATUS_STEPS = ["pending", "confirmed", "shipped", "out_for_delivery", "delivered"] as const;
 const CANCELLABLE_STATUSES = ["pending", "confirmed"];
 const STATUS_LABELS: Record<string, string> = {
   pending: "Placed",
   confirmed: "Confirmed",
   shipped: "Shipped",
+  out_for_delivery: "Out for Delivery",
   delivered: "Delivered",
 };
 
@@ -72,6 +74,23 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
       )}
       {order.status === "cancelled" && (
         <p className="mt-6 font-medium text-error">This order was cancelled.</p>
+      )}
+
+      {order.status === "out_for_delivery" && order.userId === session.userId && (
+        <div className="mt-6 rounded-lg border border-accent/40 bg-accent/5 p-4">
+          <p className="text-sm font-medium">Your delivery OTP</p>
+          <p className="mt-1 text-2xl font-semibold tracking-widest">{order.deliveryOtp}</p>
+          <p className="mt-1 text-xs text-ink-muted">
+            Share this code with the delivery person only after you&apos;ve received your order, so they can confirm
+            the handoff.
+          </p>
+          {order.deliveryOtpExpiresAt && (
+            <p className="mt-1 text-xs text-ink-muted">
+              Valid until {order.deliveryOtpExpiresAt.toLocaleString()}
+            </p>
+          )}
+          <OtpResendButton resendEndpoint={`/api/orders/${order.id}/otp/resend`} />
+        </div>
       )}
 
       <div className="mt-8 flex flex-col gap-3">
