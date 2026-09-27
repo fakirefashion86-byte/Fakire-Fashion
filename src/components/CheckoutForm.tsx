@@ -122,25 +122,37 @@ export default function CheckoutForm({
       }).catch(() => {});
     }
 
-    // The order is already saved (pending) at this point regardless of what
-    // happens with the payment popup below, so every path — success, the
-    // customer closing the modal, or the gateway failing to load — ends by
-    // sending them to the order page; if it's still unpaid, that page offers
-    // a way to retry payment.
-    if (paymentMethod === "RAZORPAY" && data.razorpay && !data.razorpay.error) {
-      try {
-        const result = await openRazorpayCheckout(data.razorpay, {
-          name: contact.name,
-          email: contact.email,
-          contact: contact.mobile,
-        });
-        await verifyRazorpayPayment(result);
-      } catch {
-        // Cancelled or gateway didn't load — order stays pending/unpaid.
+    // The order row is already saved (pending) at this point regardless of what
+    // happens with the payment popup below — that's needed so the webhook and
+    // retry-payment flow have something to attach to. But it must NOT be shown
+    // or treated as a confirmed "placed" order until the payment actually goes
+    // through: every non-success path (cancelled modal, gateway failing to
+    // load, or verify failing/erroring) sends the customer to the order page
+    // flagged as payment-pending instead of placed, so they see a "complete
+    // your payment" prompt rather than a false success message.
+    let paymentCompleted = paymentMethod === "COD";
+    if (paymentMethod === "RAZORPAY") {
+      if (data.razorpay && !data.razorpay.error) {
+        try {
+          const result = await openRazorpayCheckout(data.razorpay, {
+            name: contact.name,
+            email: contact.email,
+            contact: contact.mobile,
+          });
+          paymentCompleted = await verifyRazorpayPayment(result);
+        } catch {
+          // Cancelled or gateway didn't load — order stays pending/unpaid.
+          paymentCompleted = false;
+        }
+      } else {
+        // Razorpay order couldn't be created (not configured / API error) —
+        // nothing to pay, so it's definitely not paid.
+        paymentCompleted = false;
       }
     }
 
-    router.push(`/orders/${data.order.id}?placed=1`);
+    setLoading(false);
+    router.push(paymentCompleted ? `/orders/${data.order.id}?placed=1` : `/orders/${data.order.id}`);
   }
 
   function field(key: keyof ContactValues) {

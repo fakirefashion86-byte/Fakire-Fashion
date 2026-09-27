@@ -32,7 +32,17 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
   if (!order || (order.userId !== session.userId && session.role !== "admin")) notFound();
 
   const currentStepIndex = STATUS_STEPS.indexOf(order.status as (typeof STATUS_STEPS)[number]);
-  const justPlaced = placed === "1" && order.userId === session.userId;
+  const isOwner = order.userId === session.userId;
+  const isPaidOrCod = order.paymentMethod === "COD" || order.paymentStatus === "paid";
+  // Online-payment orders aren't confirmed until the payment actually clears, so
+  // the success banner only shows once that's true; otherwise a "complete your
+  // payment" prompt takes its place — never a false "placed" message.
+  const justPlaced = placed === "1" && isOwner && isPaidOrCod;
+  const awaitingPayment =
+    isOwner &&
+    order.paymentMethod === "RAZORPAY" &&
+    (order.paymentStatus === "pending" || order.paymentStatus === "failed") &&
+    order.status !== "cancelled";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -41,6 +51,17 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
           <p className="text-lg font-semibold text-success">Order Placed Successfully</p>
           <p className="mt-1 text-sm text-ink-secondary">
             We&apos;ve received your order and will get it ready for delivery.
+          </p>
+        </div>
+      )}
+      {!justPlaced && awaitingPayment && (
+        <div className="mb-6 rounded-lg border border-amber-400 bg-amber-50 p-5 text-center">
+          <p className="text-lg font-semibold text-amber-800">
+            {order.paymentStatus === "failed" ? "Payment Failed" : "Payment Not Completed"}
+          </p>
+          <p className="mt-1 text-sm text-amber-800/80">
+            Your order details are saved, but it isn&apos;t confirmed yet. Complete the payment below to place your
+            order.
           </p>
         </div>
       )}
@@ -139,14 +160,11 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
           {order.paymentMethod === "COD" ? "Cash on Delivery" : "Pay Online (Razorpay)"} ·{" "}
           <span className="capitalize">{order.paymentStatus}</span>
         </p>
-        {order.userId === session.userId &&
-          order.paymentMethod === "RAZORPAY" &&
-          order.paymentStatus === "pending" &&
-          order.status !== "cancelled" && (
-            <div className="mt-3">
-              <RazorpayPayButton orderId={order.id} name={order.name} email={order.email} mobile={order.mobile} />
-            </div>
-          )}
+        {awaitingPayment && (
+          <div className="mt-3">
+            <RazorpayPayButton orderId={order.id} name={order.name} email={order.email} mobile={order.mobile} />
+          </div>
+        )}
       </div>
 
       <div className="mt-4 rounded-lg border border-border p-4 text-sm">
