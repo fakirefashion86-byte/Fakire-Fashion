@@ -5,6 +5,7 @@
 // floating, or in a new window), so they take no space in the page layout.
 const OVERLAY_ZONES = [
   { id: "1ea5d7cb-02ef-42a1-b55f-12951bd943f1", format: "interstitial" },
+  { id: "d2a649e2-0486-4da8-a081-e177e2ded2f0", format: "video-spotlight" },
   { id: "23d6f7be-8e63-4d8a-b72c-879cb9bd4c1e", format: "popunder" },
   { id: "8d9a11dc-aa01-4c0a-bb0d-335ec1113fff", format: "chase-and-catch" },
 ];

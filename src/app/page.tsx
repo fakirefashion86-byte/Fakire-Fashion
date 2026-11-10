@@ -69,10 +69,6 @@ export default async function HomePage() {
           </div>
         )}
       </section>
-
-      <div className="mx-auto max-w-6xl px-4 pb-6">
-        <section data-zone-id="752dc79e-5bad-4c95-ba16-f342aaf75705"></section>
-      </div>
     </div>
   );
 }
