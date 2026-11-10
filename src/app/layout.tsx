@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AdZones from "@/components/AdZones";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,11 +38,13 @@ export default function RootLayout({
     >
       <head></head>
       <body className="min-h-full flex flex-col overflow-x-hidden">
+        <Script async src="https://tag.adsbender.com/assets/publisher_tag.js" strategy="afterInteractive" />
         <Script src="https://checkout.razorpay.com/v2/checkout.js" strategy="lazyOnload" />
         <Header />
         <main className="flex-1">
           {children}
         </main>
+        <AdZones />
         <Footer />
       </body>
     </html>
