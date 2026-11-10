@@ -12,7 +12,7 @@ const OVERLAY_ZONES = [
 // In-page banner zone (visible above the footer).
 // Video spotlight: pinned over the top of the page, so it overlays the
 // content instead of pushing it down.
-const VIDEO_SPOTLIGHT_ID = "d2a649e2-0486-4da8-a081-e177e2ded2f0";
+const VIDEO_SPOTLIGHT_ID = "193c465d-73a0-4ff9-bc53-b1ad873daab3";
 
 const INLINE_ZONE_ID = "04a666a1-3019-47ea-a835-2b43c35a8650";
 
